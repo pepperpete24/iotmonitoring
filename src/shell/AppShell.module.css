@@ -84,3 +84,11 @@
     box-shadow: var(--shadow-float);
   }
 }
+
+@media print {
+  .shell,
+  .shell[data-inspector="open"] {
+    display: block;
+    height: auto;
+  }
+}

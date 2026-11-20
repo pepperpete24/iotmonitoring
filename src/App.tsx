@@ -10,6 +10,9 @@ import { IncidentsPage } from "@/features/incidents/IncidentsPage";
 import { DevicesPage } from "@/features/devices/DevicesPage";
 import { DeviceDetailPage } from "@/features/devices/DeviceDetailPage";
 import { WaterPage } from "@/features/water/WaterPage";
+import { LogbookPage } from "@/features/logbook/LogbookPage";
+import { MonthlyReportPage } from "@/features/reports/MonthlyReportPage";
+import { IncidentReportPage } from "@/features/reports/IncidentReportPage";
 import { IncidentDetailPage } from "@/features/incidents/IncidentDetailPage";
 import { TokensPage } from "@/dev/TokensPage";
 import { applyDocumentPrefs, useUi } from "@/state/ui";
@@ -31,17 +34,13 @@ const router = createBrowserRouter([
       { path: "buildings/:id", element: <BuildingPage /> },
       { path: "incidents", element: <IncidentsPage /> },
       { path: "incidents/:id", element: <IncidentDetailPage /> },
-      {
-        path: "logbook",
-        element: <Pending title="Logbook" job="Everything that happened and who did it, append-only." milestone="M6" />,
-      },
+      { path: "logbook", element: <LogbookPage /> },
       { path: "devices", element: <DevicesPage /> },
       { path: "devices/:id", element: <DeviceDetailPage /> },
       { path: "water", element: <WaterPage /> },
-      {
-        path: "reports/*",
-        element: <Pending title="Reports" job="Monthly portfolio and single-incident reports for owners and insurers." milestone="M6" />,
-      },
+      { path: "reports", element: <Navigate to="/reports/monthly" replace /> },
+      { path: "reports/monthly", element: <MonthlyReportPage /> },
+      { path: "reports/incident/:id", element: <IncidentReportPage /> },
       {
         path: "settings/*",
         element: <Pending title="Settings" job="Escalation, rules, people, integrations, plan and billing." milestone="M8" />,

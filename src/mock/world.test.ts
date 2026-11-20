@@ -110,6 +110,7 @@ describe("history", () => {
     expect(median(business)).toBe(6);
     expect(median(after)).toBe(23);
     expect(Math.max(...after)).toBeGreaterThan(200); // a visible tail
+    expect(Math.max(...after, ...business)).toBe(225); // the Foundry burst is the slowest of the quarter
   });
 
   it("records the Foundry burst: 260 min, 9.88 kL, acknowledged after 3 h 45 min", () => {

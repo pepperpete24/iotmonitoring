@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Command } from "@/mock/engine/engine";
 import { transport } from "./transport";
+import type { MonthlyReport } from "@/mock/views-reports";
 import type { DeviceDetail, DeviceLive, WaterView, BuildingDetail, IncidentDetail, IncidentSummary, LogbookView, PortfolioStatus, SeriesView } from "./types";
 
 export const queryKeys = {
@@ -90,6 +91,14 @@ export function useWater(building?: string) {
   return useQuery({
     queryKey: ["water", building ?? ""],
     queryFn: () => transport.get<WaterView>(`/api/water${building ? `?building=${building}` : ""}`),
+    placeholderData: (prev) => prev,
+  });
+}
+
+export function useMonthlyReport(month: string) {
+  return useQuery({
+    queryKey: ["reports", "monthly", month],
+    queryFn: () => transport.get<MonthlyReport>(`/api/reports/monthly?month=${month}`),
     placeholderData: (prev) => prev,
   });
 }

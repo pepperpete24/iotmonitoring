@@ -131,7 +131,26 @@ a {
 }
 
 @media print {
-  body { background: #fff; }
+  :root {
+    color-scheme: light;
+  }
+  body {
+    background: #fff;
+  }
+  /* reports print on their own: the app's chrome stays on screen */
+  .no-print,
+  section[aria-label="Watch"],
+  nav[aria-label="Buildings"],
+  aside[aria-label="Inspector"],
+  section[aria-label="Demo tray"],
+  button[aria-keyshortcuts="Shift+D"],
+  body header:has(nav[aria-label="Primary"]) {
+    display: none !important;
+  }
+  #canvas {
+    overflow: visible !important;
+    background: #fff !important;
+  }
 }
 
 .t-briefing strong {

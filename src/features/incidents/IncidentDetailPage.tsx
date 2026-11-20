@@ -137,7 +137,7 @@ const MEASURE: Record<string, { color: string; unit: string; state?: [string, st
   door: { color: "var(--ink)", unit: "", state: ["Closed", "Open"] },
 };
 
-function Evidence({ i }: { i: IncidentDetail }) {
+export function Evidence({ i }: { i: IncidentDetail }) {
   const portfolio = usePortfolioStatus();
   const b = portfolio.data?.buildings.find((x) => x.id === i.buildingId);
   // channels: the meter that measured the leak first, then each alerting device, state channels last
@@ -223,7 +223,7 @@ function alignTo(points: Array<[number, number | null]>, base: Array<[number, nu
 
 // ---- water and cost -------------------------------------------------------------------
 
-function WaterAndCost({ i }: { i: IncidentDetail }) {
+export function WaterAndCost({ i }: { i: IncidentDetail }) {
   const tariff = formatAUD(i.tariffPerKL, { cents: true });
   return (
     <section className={styles.section} aria-labelledby="water-h">
@@ -277,7 +277,7 @@ function resultWords(n: NotificationView): string {
   return n.detail;
 }
 
-function Escalation({ i }: { i: IncidentDetail }) {
+export function Escalation({ i }: { i: IncidentDetail }) {
   const steps = new Map<string, NotificationView[]>();
   for (const n of i.notifications) {
     const key = n.stepSeq === null ? `notice-${n.at}` : `step-${n.stepSeq}`;

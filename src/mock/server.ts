@@ -9,6 +9,7 @@ import { personById, PEOPLE } from "@/mock/world/people";
 import { incidentDetail, incidentSummary, logbookView, portfolioStatus } from "./views";
 import { buildingDetail, deviceLive, series } from "./views-building";
 import { deviceDetail, waterView } from "./views-more";
+import { monthlyReport } from "./views-reports";
 import { allDevices } from "@/mock/world/topology";
 import { buildingById } from "@/mock/world/buildings";
 
@@ -55,6 +56,17 @@ const routes: Array<[method: string, pattern: RegExp, keys: string[], handler: H
     ({ id }) => {
       const d = deviceDetail(engine, id ?? "", engine.now);
       return d ? ok(d) : notFound(`device ${id}`);
+    },
+  ],
+
+  [
+    "GET",
+    /^\/api\/reports\/monthly$/,
+    [],
+    (_p, q) => {
+      const month = q.get("month") ?? "2026-10";
+      if (!/^\d{4}-\d{2}$/.test(month)) return { status: 400, body: "Give the month as YYYY-MM, for example 2026-10." };
+      return ok(monthlyReport(engine, month, engine.now));
     },
   ],
 
