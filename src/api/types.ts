@@ -144,6 +144,8 @@ export interface ReadingView {
 export interface DeviceLive {
   id: string;
   tag: string;
+  /** A name a person gave it, if any. */
+  name: string | null;
   kind: string;
   kindLabel: string;
   model: string;
@@ -163,6 +165,8 @@ export interface DeviceLive {
   battery: number;
   rssi: number;
   snr: number;
+  /** Typical RSSI worse than -110 dBm (the latest uplink varies a few dBm either side). */
+  weakSignal: boolean;
   link: string;
   gatewayTag: string | null;
   firmware: string;
@@ -214,6 +218,42 @@ export interface BuildingDetail {
   valve: { tag: string; closed: boolean; isolation: string } | null;
   /** Where water is escaping, for the riser drawing: from the meter that sees it to where it is. */
   waterFault: { incidentId: string; severity: Severity; meterLevelId: string; faultLevelId: string; systemId: string | null } | null;
+}
+
+/** GET /api/devices/:id */
+export interface DeviceDetail {
+  device: DeviceLive;
+  buildingName: string;
+  zone: string;
+  levelLabel: string;
+  systemName: string | null;
+  installer: string;
+  installedAt: UtcMs;
+  calibratedAt: UtcMs | null;
+  replacedAt: UtcMs | null;
+  lossRatePct: number;
+  rules: string[];
+  /** Battery % at local midnight each day for 90 days. */
+  battery: Array<[UtcMs, number]>;
+  /** Hourly RSSI and SNR for 7 days; null where the device was silent. */
+  signal: Array<[UtcMs, number | null, number | null]>;
+  uplinks: Array<{ at: UtcMs; rssi: number; snr: number; battery: number; values: string }>;
+  gaps: Array<{ from: UtcMs; to: UtcMs; reason: string }>;
+}
+
+/** GET /api/water */
+export interface WaterView {
+  scope: { buildingId: string | null; name: string };
+  tariffPerKL: number;
+  /** Last 30 days, one row per local day: actual and the usual for that weekday. */
+  daily: Array<{ day: UtcMs; actualL: number; expectedL: number }>;
+  /** Last 48 hours by hour. */
+  hourly: Array<{ t: UtcMs; actualL: number; expectedL: number }>;
+  /** Overnight figure for 30 nights for one building, with the trailing baseline band. */
+  nights: { buildingId: string; name: string; points: Array<{ night: UtcMs; value: number | null; p10: number; p50: number; p90: number; breach: boolean }> };
+  anomalies: Array<{ buildingId: string; name: string; night: UtcMs; value: number; baseline: number; excess: number; incidentId: string | null }>;
+  benchmark: Array<{ type: string; unitLabel: string; rows: Array<{ buildingId: string; name: string; perUnitL: number }> }>;
+  totals: { last30L: number; usual30L: number; cost30AUD: number; leakLossL: number; leakCostAUD: number };
 }
 
 /** GET /api/series */

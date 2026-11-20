@@ -7,7 +7,10 @@ import { CommandError, type Command } from "@/mock/engine/engine";
 import { engine, runCommand, sync } from "@/mock/runtime";
 import { personById, PEOPLE } from "@/mock/world/people";
 import { incidentDetail, incidentSummary, logbookView, portfolioStatus } from "./views";
-import { buildingDetail, series } from "./views-building";
+import { buildingDetail, deviceLive, series } from "./views-building";
+import { deviceDetail, waterView } from "./views-more";
+import { allDevices } from "@/mock/world/topology";
+import { buildingById } from "@/mock/world/buildings";
 
 interface MockResponse {
   status: number;
@@ -30,6 +33,36 @@ const routes: Array<[method: string, pattern: RegExp, keys: string[], handler: H
       const b = buildingDetail(engine, id ?? "", engine.now);
       return b ? ok(b) : notFound(`building ${id}`);
     },
+  ],
+
+  [
+    "GET",
+    /^\/api\/devices$/,
+    [],
+    (_p, q) => {
+      const building = q.get("building");
+      const list = allDevices()
+        .filter((d) => !building || d.buildingId === building)
+        .map((d) => ({ ...deviceLive(engine, d, engine.now), buildingName: buildingById.get(d.buildingId)!.name, zone: buildingById.get(d.buildingId)!.zone }));
+      return ok(list);
+    },
+  ],
+
+  [
+    "GET",
+    /^\/api\/devices\/(.+)$/,
+    ["id"],
+    ({ id }) => {
+      const d = deviceDetail(engine, id ?? "", engine.now);
+      return d ? ok(d) : notFound(`device ${id}`);
+    },
+  ],
+
+  [
+    "GET",
+    /^\/api\/water$/,
+    [],
+    (_p, q) => ok(waterView(engine, q.get("building") || null, engine.now)),
   ],
 
   [

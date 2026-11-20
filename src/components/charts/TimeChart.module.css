@@ -244,3 +244,55 @@
 .num {
   text-align: right !important;
 }
+
+.legendRow {
+  display: flex;
+  gap: 16px;
+  font-family: var(--font-num);
+  font-size: var(--fs-12);
+  color: var(--ink-soft);
+}
+
+.legendRow > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.swatchBar {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background: var(--jade);
+}
+
+.swatchLine {
+  width: 14px;
+  height: 2px;
+  background: var(--ink);
+}
+
+.bar {
+  fill: var(--jade);
+}
+
+.barHover {
+  fill: color-mix(in oklab, var(--jade), var(--ink) 18%);
+}
+
+.barGroup {
+  outline: none;
+}
+
+.barGroup:focus-visible .bar,
+.barGroup:focus-visible .barHover {
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+
+.expected {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}

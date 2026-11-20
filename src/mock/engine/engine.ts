@@ -16,7 +16,9 @@ import { type Effect, active } from "@/mock/signals/effects";
 import { sample } from "@/mock/signals/signals";
 import { buildingById } from "@/mock/world/buildings";
 import { personName } from "@/mock/world/people";
-import { criticalPolicy, warningPolicy } from "@/mock/world/rules";
+import { criticalPolicy, ROSTER, warningPolicy } from "@/mock/world/rules";
+
+const ROSTER_FIRST = (buildingId: string) => ROSTER[buildingId]?.[0] ?? "helen";
 import { allDevices, deviceById, topologyOf } from "@/mock/world/topology";
 import { runCriticalEscalation, testMessage, warningNotice } from "./escalation";
 import { buildWatches, conditionAt, type Watch } from "./rules";
@@ -42,6 +44,10 @@ export type Command =
   | { type: "update-contact"; personId: string; mobileMasked: string; by: string }
   | { type: "test-message"; personId: string; by: string }
   | { type: "set-tariff"; perKL: number; by: string }
+  | { type: "rename-device"; deviceId: string; name: string; by: string }
+  | { type: "move-device"; deviceId: string; location: string; by: string }
+  | { type: "replace-device"; deviceId: string; reason: string; by: string }
+  | { type: "test-alert"; deviceId: string; by: string }
   | { type: "trigger"; scenario: "burst" | "door" | "gateway" | "leak-false-alarm"; by: string };
 
 export interface StampedCommand {
@@ -72,6 +78,8 @@ export class Engine {
   now: UtcMs = DEMO_START;
   tariffPerKL = 3.5;
   contactOverrides = new Map<string, string>();
+  /** Changes people make to devices: a name, a new location, a replacement. */
+  deviceOverrides = new Map<string, { name?: string; location?: string; devEui?: string; replacedAt?: UtcMs }>();
   private watches: Watch[] = [];
   private state = new Map<string, { since: UtcMs | null; alertId: string | null }>();
   private scheduled: Scheduled[] = [];
@@ -91,6 +99,7 @@ export class Engine {
     this.now = DEMO_START;
     this.tariffPerKL = 3.5;
     this.contactOverrides.clear();
+    this.deviceOverrides.clear();
     this.commands.length = 0;
     this.scheduled = [];
     this.escalatedThrough = new Map();
@@ -561,6 +570,42 @@ export class Engine {
         this.emit("settings");
         break;
       }
+      case "rename-device": {
+        const d = this.mustDevice(cmd.deviceId);
+        if (!cmd.name.trim()) throw new CommandError(400, "Enter a name for the device.");
+        this.deviceOverrides.set(d.id, { ...this.deviceOverrides.get(d.id), name: cmd.name.trim() });
+        this.log(cmd.by, "setting-changed", { buildingId: d.buildingId, deviceId: d.id, target: d.tag, detail: `Renamed ${d.tag} to "${cmd.name.trim()}".` });
+        break;
+      }
+      case "move-device": {
+        const d = this.mustDevice(cmd.deviceId);
+        if (!cmd.location.trim()) throw new CommandError(400, "Enter where the device now is.");
+        const from = this.deviceOverrides.get(d.id)?.location ?? d.location;
+        this.deviceOverrides.set(d.id, { ...this.deviceOverrides.get(d.id), location: cmd.location.trim() });
+        this.log(cmd.by, "setting-changed", { buildingId: d.buildingId, deviceId: d.id, target: d.tag, detail: `Moved ${d.tag} from ${from} to ${cmd.location.trim()}.` });
+        break;
+      }
+      case "replace-device": {
+        const d = this.mustDevice(cmd.deviceId);
+        if (!cmd.reason.trim()) throw new CommandError(400, "Record why the device was replaced.");
+        const eui = Array.from({ length: 16 }, (_, k) => "0123456789ABCDEF"[(d.devEui.charCodeAt(k) * 7 + this.now / 60_000 + k) % 16 | 0]).join("");
+        this.deviceOverrides.set(d.id, { ...this.deviceOverrides.get(d.id), devEui: eui, replacedAt: this.now });
+        // a new device reports again straight away
+        for (const e of this.world.effects.forDevice(d.id)) if (e.kind === "gap" && e.to === null) this.world.effects.end(e, this.now);
+        this.log(cmd.by, "device-commissioned", { buildingId: d.buildingId, deviceId: d.id, target: d.tag, detail: `Replaced ${d.tag}. New DevEUI ${eui}. Reason: ${cmd.reason.trim()}.` });
+        this.emit("effects");
+        break;
+      }
+      case "test-alert": {
+        const d = this.mustDevice(cmd.deviceId);
+        const first = ROSTER_FIRST(d.buildingId);
+        const n = testMessage(first, this.now, this.world.contacts);
+        n.body = `Test alert from ${d.tag}, ${d.location}. No action needed.`;
+        this.world.notifications.push(n);
+        this.log(cmd.by, "test-message", { buildingId: d.buildingId, deviceId: d.id, target: d.tag, detail: `Test alert from ${d.tag} sent to ${personName(first)} by SMS: ${lowerFirst(n.detail)}.` });
+        this.emit("notifications");
+        break;
+      }
       case "trigger":
         this.trigger(cmd.scenario);
         break;
@@ -631,6 +676,12 @@ export class Engine {
 
   incidentOf(a: Alert): Incident | undefined {
     return this.world.incidents.find((i) => i.id === a.incidentId);
+  }
+
+  private mustDevice(id: string) {
+    const d = deviceById(id);
+    if (!d) throw new CommandError(404, `No device ${id.split("/")[1] ?? id}.`);
+    return d;
   }
 
   private mustIncident(id: string): Incident {

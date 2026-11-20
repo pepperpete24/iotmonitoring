@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Command } from "@/mock/engine/engine";
 import { transport } from "./transport";
-import type { BuildingDetail, IncidentDetail, IncidentSummary, LogbookView, PortfolioStatus, SeriesView } from "./types";
+import type { DeviceDetail, DeviceLive, WaterView, BuildingDetail, IncidentDetail, IncidentSummary, LogbookView, PortfolioStatus, SeriesView } from "./types";
 
 export const queryKeys = {
   portfolioStatus: ["portfolio", "status"] as const,
@@ -65,6 +65,31 @@ export function useSeries(channelId: string | undefined, range: { from?: number;
       return transport.get<SeriesView>(`/api/series?${q.toString()}`);
     },
     enabled: !!channelId,
+    placeholderData: (prev) => prev,
+  });
+}
+
+export type DeviceRow = DeviceLive & { buildingName: string; zone: string };
+
+export function useDevices(building?: string) {
+  return useQuery({
+    queryKey: ["devices", "list", building ?? ""],
+    queryFn: () => transport.get<DeviceRow[]>(`/api/devices${building ? `?building=${building}` : ""}`),
+  });
+}
+
+export function useDevice(id: string | undefined) {
+  return useQuery({
+    queryKey: ["devices", "detail", id ?? ""],
+    queryFn: () => transport.get<DeviceDetail>(`/api/devices/${encodeURIComponent(id!)}`),
+    enabled: !!id,
+  });
+}
+
+export function useWater(building?: string) {
+  return useQuery({
+    queryKey: ["water", building ?? ""],
+    queryFn: () => transport.get<WaterView>(`/api/water${building ? `?building=${building}` : ""}`),
     placeholderData: (prev) => prev,
   });
 }

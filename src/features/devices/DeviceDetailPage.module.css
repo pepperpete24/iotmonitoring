@@ -1,0 +1,152 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px 32px 64px;
+  min-width: 0;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.kicker {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-family: var(--font-num);
+}
+
+.where {
+  color: var(--ink-soft);
+}
+
+.columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 32px;
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  align-content: start;
+  border-top: 1px solid var(--rule);
+}
+
+.facts dt,
+.facts dd {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.facts dt {
+  color: var(--ink-soft);
+  font-family: var(--font-num);
+  font-size: var(--fs-13);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.list li {
+  padding: 6px 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 8px;
+}
+
+.row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 16px;
+  border-left: 2px solid var(--ink);
+  background: var(--wash);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: var(--fs-13);
+  color: var(--ink-soft);
+}
+
+.field input,
+.field select {
+  height: 32px;
+  padding: 0 8px;
+  border: 1px solid var(--ink-soft);
+  border-radius: var(--r-control);
+  background: var(--paper);
+  color: var(--ink);
+  font-size: var(--fs-14);
+  max-width: 480px;
+}
+
+.error {
+  padding: 6px 10px;
+  border-left: 3px solid var(--critical);
+  background: var(--wash);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-num);
+  font-size: var(--fs-13);
+}
+
+.table th,
+.table td {
+  height: var(--row-h);
+  padding: 0 12px 0 0;
+  border-bottom: 1px solid var(--rule);
+  text-align: left;
+}
+
+.table th {
+  border-bottom-color: var(--ink-soft);
+  color: var(--ink-soft);
+  font-size: var(--fs-12);
+  font-weight: 500;
+}
+
+.num {
+  text-align: right !important;
+}
+
+@media (max-width: 1000px) {
+  .columns {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 767px) {
+  .page {
+    padding: 16px 16px 64px;
+  }
+  .table {
+    display: block;
+    overflow-x: auto;
+  }
+}

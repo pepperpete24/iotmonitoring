@@ -176,7 +176,9 @@ export function demandModel(b: BuildingProfile): DemandModel {
   if (b.type === "shopping-centre" || b.type === "office" || b.type === "healthcare" || b.type === "retail") {
     units = b.areaM2 ?? b.occupancy.count;
   }
-  const dailyL = units * d.perUnit;
+  // Buildings of the same type differ: fittings, age, tenants. About ±15%, fixed per building.
+  const efficiency = 1 + (((hashString(`eff:${b.id}`) % 1001) / 1000) - 0.5) * 0.3;
+  const dailyL = units * d.perUnit * efficiency;
   const night = NIGHT_OVERRIDE[b.id]?.mean ?? Math.round((dailyL / 1440) * d.nightFrac * 10) / 10;
   return { dailyL, nightLpm: night };
 }

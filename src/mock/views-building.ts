@@ -31,13 +31,15 @@ export function deviceLive(engine: Engine, d: Device, now: UtcMs): DeviceLive {
   const openIncident = open
     .map((a) => engine.world.incidents.find((i) => i.id === a.incidentId))
     .find((i) => i && i.state !== "resolved");
+  const ov = engine.deviceOverrides.get(d.id);
   return {
     id: d.id,
     tag: d.tag,
+    name: ov?.name ?? null,
     kind: d.kind,
     kindLabel: DEVICE_KIND_LABEL[d.kind],
     model: d.model,
-    location: d.location,
+    location: ov?.location ?? d.location,
     buildingId: d.buildingId,
     levelId: d.levelId,
     systemId: d.systemId,
@@ -57,11 +59,12 @@ export function deviceLive(engine: Engine, d: Device, now: UtcMs): DeviceLive {
     battery: h.battery,
     rssi: h.rssi,
     snr: h.snr,
+    weakSignal: d.rssi < -110,
     link: d.link,
     gatewayTag: d.gatewayId ? d.gatewayId.split("/")[1]! : null,
     firmware: d.firmware,
     firmwareLatest: d.firmware === FIRMWARE_LATEST[d.kind],
-    devEui: d.devEui,
+    devEui: ov?.devEui ?? d.devEui,
   };
 }
 

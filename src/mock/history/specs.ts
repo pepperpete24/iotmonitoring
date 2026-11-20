@@ -301,8 +301,8 @@ export const HISTORY: readonly HistorySpec[] = [
     alerts: [{ rule: "overnight-flow", device: "FT-01", afterMin: 0, value: 12.2, summary: "Overnight flow above baseline for 30 min" }],
     ack: { afterMin: 370, by: "marcus" },
     resolve: { afterMin: 1965, by: "marcus", code: "fixed", cause: "Temperature and pressure relief valve on the hot water plant discharging", action: "Relief valve replaced by Calloway Plumbing" },
-    effects: (o) => [leak("kendall-street-tower", ["FT-01", "FT-03"], 2.8, o - 150 * M, o + 1960 * M, "Relief valve discharging")],
-    water: { rateLpm: 2.8, fromMin: -150, toMin: 1960, meter: "FT-01" },
+    effects: (o) => [leak("kendall-street-tower", ["FT-01", "FT-03"], 3.4, o - 150 * M, o + 1960 * M, "Relief valve discharging")],
+    water: { rateLpm: 3.4, fromMin: -150, toMin: 1960, meter: "FT-01" },
   },
   {
     key: "pca-running-toilet",
@@ -357,8 +357,8 @@ export const HISTORY: readonly HistorySpec[] = [
     alerts: [{ rule: "overnight-flow", device: "FT-01", afterMin: 0, value: 0, summary: "Overnight flow above baseline for 30 min" }],
     ack: { afterMin: 375, by: "josh" },
     resolve: { afterMin: 1890, by: "josh", code: "fixed", cause: "Toilet cistern flapper perished in apartment 302", action: "Owner notified, flapper replaced by Calloway Plumbing" },
-    effects: (o) => [leak("the-foundry", ["FT-01"], 1.9, o - 300 * M, o + 1880 * M, "Cistern flapper, apartment 302")],
-    water: { rateLpm: 1.9, fromMin: -300, toMin: 1880, meter: "FT-01" },
+    effects: (o) => [leak("the-foundry", ["FT-01"], 3.6, o - 300 * M, o + 1880 * M, "Cistern flapper, apartment 302")],
+    water: { rateLpm: 3.6, fromMin: -300, toMin: 1880, meter: "FT-01" },
   },
 
   // ---- Pump run-time or failure (5) ------------------------------------------------------

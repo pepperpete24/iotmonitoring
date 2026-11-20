@@ -122,7 +122,7 @@ export function DeviceInspector({ id }: { id: string }) {
           <dd>{formatNumber(d.battery, 1)}%</dd>
           <dt>Signal</dt>
           <dd>
-            RSSI {d.rssi} dBm, SNR {formatNumber(d.snr, 1)} dB{d.rssi < -110 ? ", weak" : ""}
+            RSSI {d.rssi} dBm, SNR {formatNumber(d.snr, 1)} dB{d.weakSignal ? ", weak" : ""}
           </dd>
           <dt>Link</dt>
           <dd>

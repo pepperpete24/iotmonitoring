@@ -1,0 +1,147 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px 32px 64px;
+  min-width: 0;
+}
+
+.head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.field {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--fs-13);
+  color: var(--ink-soft);
+}
+
+.field select {
+  height: 32px;
+  padding: 0 8px;
+  border: 1px solid var(--ink-soft);
+  border-radius: var(--r-control);
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.summary {
+  max-width: 70ch;
+}
+
+.refreshing {
+  opacity: 0.75;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 24px;
+}
+
+.twoUp {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 32px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-num);
+  font-size: var(--fs-13);
+}
+
+.table th,
+.table td {
+  height: var(--row-h);
+  padding: 0 12px 0 0;
+  border-bottom: 1px solid var(--rule);
+  text-align: left;
+}
+
+.table th {
+  border-bottom-color: var(--ink-soft);
+  color: var(--ink-soft);
+  font-size: var(--fs-12);
+  font-weight: 500;
+}
+
+.num {
+  text-align: right !important;
+}
+
+.benchGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+  gap: 24px 32px;
+}
+
+.bench {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.bench figcaption {
+  font-size: var(--fs-13);
+}
+
+.dot {
+  fill: var(--jade);
+  stroke: var(--paper);
+  stroke-width: 2;
+}
+
+.median {
+  fill: none;
+  stroke: var(--ink-soft);
+  stroke-width: 1;
+  stroke-dasharray: 4 3;
+}
+
+.dotKey {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--jade);
+}
+
+.bandKey {
+  width: 14px;
+  height: 10px;
+  background: var(--jade-band);
+}
+
+.rowLabel {
+  font-family: var(--font-num);
+  font-size: var(--fs-13);
+  fill: var(--ink);
+}
+
+@media (max-width: 1100px) {
+  .twoUp {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 767px) {
+  .page {
+    padding: 16px 16px 64px;
+  }
+  .benchGrid {
+    grid-template-columns: 1fr;
+  }
+  .table {
+    display: block;
+    overflow-x: auto;
+  }
+}

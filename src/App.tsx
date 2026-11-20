@@ -7,6 +7,9 @@ import { SymbolsPage } from "@/dev/SymbolsPage";
 import { BuildingPage } from "@/features/building/BuildingPage";
 import { PortfolioPage } from "@/features/portfolio/PortfolioPage";
 import { IncidentsPage } from "@/features/incidents/IncidentsPage";
+import { DevicesPage } from "@/features/devices/DevicesPage";
+import { DeviceDetailPage } from "@/features/devices/DeviceDetailPage";
+import { WaterPage } from "@/features/water/WaterPage";
 import { IncidentDetailPage } from "@/features/incidents/IncidentDetailPage";
 import { TokensPage } from "@/dev/TokensPage";
 import { applyDocumentPrefs, useUi } from "@/state/ui";
@@ -32,15 +35,9 @@ const router = createBrowserRouter([
         path: "logbook",
         element: <Pending title="Logbook" job="Everything that happened and who did it, append-only." milestone="M6" />,
       },
-      {
-        path: "devices",
-        element: <Pending title="Devices" job="Every device, its health and whether its data can be trusted." milestone="M5" />,
-      },
-      { path: "devices/:id", element: <Pending title="Device" job="Health, uplinks and thresholds for one device." milestone="M5" /> },
-      {
-        path: "water",
-        element: <Pending title="Water" job="Where water is being wasted: consumption, the overnight baseline and benchmarks." milestone="M5" />,
-      },
+      { path: "devices", element: <DevicesPage /> },
+      { path: "devices/:id", element: <DeviceDetailPage /> },
+      { path: "water", element: <WaterPage /> },
       {
         path: "reports/*",
         element: <Pending title="Reports" job="Monthly portfolio and single-incident reports for owners and insurers." milestone="M6" />,
