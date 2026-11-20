@@ -206,9 +206,8 @@
 }
 
 .callout {
-  padding: 3mm 4mm;
+  padding: 1mm 4mm;
   border-left: 2px solid var(--ink);
-  background: var(--wash);
   font-size: 12px;
   line-height: 1.5;
 }
