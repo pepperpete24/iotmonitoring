@@ -1,6 +1,6 @@
 /**
  * API contract types: the shapes a real FastAPI backend returns.
- * docs/api-contract.md documents each endpoint against them.
+ * src/mock/server.ts implements each endpoint against them.
  */
 import type { AnnunciatorChannel, AnnunciatorState, AuState, BuildingType, IncidentState, Severity, Status, UtcMs } from "@/domain/common";
 import type { DeliveryResult, IncidentCategory, LogbookAction, NotifyChannel, ResolutionCode } from "@/domain/building";

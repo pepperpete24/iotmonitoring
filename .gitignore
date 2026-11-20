@@ -13,3 +13,8 @@ dataviz-skill.zip
 *.jpg
 *.jpeg
 .claude/skills/dataviz/
+
+# project information stays off GitHub
+Brief.md
+docs/
+axe-results.json

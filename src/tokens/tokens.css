@@ -1,6 +1,6 @@
 /*
  * Tidemark tokens. Source of truth for every colour, size and space in the app.
- * Colours validated with the dataviz validator; see docs/design-plan.md section 2.
+ * Colours validated with the dataviz validator.
  * `npm run palette` re-runs the validator against the values in this file.
  */
 

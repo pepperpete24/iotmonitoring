@@ -6,7 +6,6 @@ turns readings into monitoring, managed alerts, reports and an auditable
 incident record. It runs entirely in the browser on a deterministic mock
 world with Australian demo data. Tidemark is a working name.
 
-The brief is `Brief.md`. Design and data decisions are in `docs/`.
 
 ## Run it
 
@@ -94,7 +93,6 @@ src/
   components/    glyphs, annunciator, tags, values, buttons, table, charts, symbols
   features/      the screens
   lib/           formatting, time zones, rule wording
-docs/            design plan, notes, decisions, audit, data spec, API contract
 scripts/         palette check, literal scan, axe, overflow, screenshots, PDF
 e2e/             Playwright checks
 screenshots/     per milestone and final
@@ -102,6 +100,6 @@ screenshots/     per milestone and final
 
 ## Replacing the mock
 
-The UI talks only to `src/api/transport.ts`. `docs/api-contract.md` lists every
-REST endpoint, command and live event; a FastAPI backend that implements it can
-replace `MockTransport` without changes to the screens.
+The UI talks only to `src/api/transport.ts`, and the request and response types
+are in `src/api/types.ts`. A backend that implements the same routes can replace
+`MockTransport` without changes to the screens.

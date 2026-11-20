@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
   formatAUD,
-  formatAUDRange,
   formatDate,
   formatDateTime,
   formatDuration,
@@ -33,7 +32,6 @@ describe("numbers and units", () => {
     expect(formatAUD(1850)).toBe("A$1,850");
     expect(formatAUD(31.25)).toBe("A$31.25");
     expect(formatAUD(3.5, { cents: true })).toBe("A$3.50");
-    expect(formatAUDRange(650, 1850)).toBe("A$650 to A$1,850");
   });
 });
 

@@ -1,6 +1,6 @@
 /**
  * In-browser request router for the mock backend. Mirrors the REST paths in
- * docs/api-contract.md. Every request first brings the engine up to the
+ * src/api/types.ts. Every request first brings the engine up to the
  * current simulated time.
  */
 import { CommandError, type Command } from "@/mock/engine/engine";

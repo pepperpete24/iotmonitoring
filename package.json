@@ -13,7 +13,7 @@
     "shots": "node scripts/shots.mjs --out screenshots/final --widths 1920,1440,1024,768,390",
     "test:e2e": "playwright test",
     "scan": "node scripts/scan-literals.mjs",
-    "axe": "node scripts/axe.mjs --json docs/axe-results.json",
+    "axe": "node scripts/axe.mjs --json axe-results.json",
     "audit": "npm run -s palette && npm run -s scan && npm run -s axe && npm run -s overflow",
     "overflow": "node scripts/overflow.mjs"
   },

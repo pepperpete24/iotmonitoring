@@ -69,11 +69,6 @@ export function formatAUD(value: number, opts: { cents?: boolean } = {}): string
   return `${value < 0 ? "−" : ""}A$${s}`;
 }
 
-/** "A$650 to A$1,850" for pricing under test. */
-export function formatAUDRange(min: number, max: number): string {
-  return `${formatAUD(min)} to ${formatAUD(max)}`;
-}
-
 // ---- time zones -------------------------------------------------------------
 
 export type AuZone =

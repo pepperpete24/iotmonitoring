@@ -5,7 +5,7 @@ import { ArrowDown, ArrowUp, Trash2 } from "lucide-react";
 import { type PersonRow, useCommand, usePeople, useSettings } from "@/api/queries";
 import { Button } from "@/components/Button";
 import { StatusGlyph } from "@/components/status/StatusGlyph";
-import { formatAUD, formatAUDRange, formatDateTime, formatNumber } from "@/lib/format";
+import { formatAUD, formatDateTime, formatNumber } from "@/lib/format";
 import { useUi } from "@/state/ui";
 import { brand } from "@/brand";
 import styles from "./SettingsPage.module.css";
@@ -547,13 +547,13 @@ function PlanSettings() {
         </p>
       </section>
       <section className={styles.section} aria-labelledby="price-h">
-        <h2 id="price-h" className="t-section">Pricing under test, ex GST</h2>
-        <p className="t-prose soft">These are ranges being tested with customers, not a price list. The invoices below use one figure inside the range, for illustration.</p>
+        <h2 id="price-h" className="t-section">Prices, ex GST</h2>
+        <p className="t-prose soft">Placeholder prices for this demo, not a price list.</p>
         <table className={styles.table}>
           <thead>
             <tr>
               <th scope="col">Item</th>
-              <th scope="col" className={styles.right}>Range under test</th>
+              <th scope="col" className={styles.right}>Price</th>
               <th scope="col">Basis</th>
             </tr>
           </thead>
@@ -561,7 +561,7 @@ function PlanSettings() {
             {data.pricing.map((p) => (
               <tr key={p.item}>
                 <td>{p.item}</td>
-                <td className={styles.right}>{formatAUDRange(p.min, p.max)}</td>
+                <td className={styles.right}>{formatAUD(p.price)}</td>
                 <td>{p.per}</td>
               </tr>
             ))}
@@ -629,7 +629,7 @@ function PlanSettings() {
             ))}
           </tbody>
         </table>
-        <p className="t-small">Illustrative: one figure from the range under test.</p>
+        <p className="t-small">Placeholder amounts.</p>
       </section>
       <section className={styles.section} aria-labelledby="mod-h">
         <h2 id="mod-h" className="t-section">Modules</h2>
