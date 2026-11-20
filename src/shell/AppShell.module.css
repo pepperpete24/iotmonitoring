@@ -1,0 +1,86 @@
+.shell {
+  display: grid;
+  grid-template-columns: var(--tree-w) minmax(0, 1fr) 0;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  grid-template-areas:
+    "top top top"
+    "watch watch watch"
+    "tree canvas inspector";
+  height: 100vh;
+  height: 100dvh;
+}
+
+.shell[data-inspector="open"] {
+  grid-template-columns: var(--tree-w) minmax(0, 1fr) var(--inspector-w);
+}
+
+.canvas {
+  grid-area: canvas;
+  overflow: auto;
+  background: var(--paper);
+  min-width: 0;
+}
+
+.canvas:focus {
+  outline: none;
+}
+
+.skip {
+  position: absolute;
+  left: 8px;
+  top: -40px;
+  z-index: 60;
+  padding: 6px 10px;
+  background: var(--ink);
+  color: var(--paper);
+  border-radius: var(--r-control);
+}
+
+.skip:focus {
+  top: 8px;
+}
+
+.scrim {
+  display: none;
+}
+
+/* 768 to 1279: tree is a drawer, inspector a side sheet over the canvas */
+@media (max-width: 1279px) {
+  .shell,
+  .shell[data-inspector="open"] {
+    grid-template-columns: 0 minmax(0, 1fr) 0;
+  }
+
+  .shell > nav[aria-label="Buildings"] {
+    display: none;
+  }
+
+  .shell[data-tree="open"] > nav[aria-label="Buildings"] {
+    display: block;
+    position: fixed;
+    z-index: 30;
+    top: var(--topbar-h);
+    left: 0;
+    bottom: 0;
+    width: min(var(--tree-w), 85vw);
+    box-shadow: var(--shadow-float);
+  }
+
+  .shell[data-tree="open"] .scrim {
+    display: block;
+    position: fixed;
+    inset: var(--topbar-h) 0 0 0;
+    z-index: 29;
+    background: rgb(15 21 20 / 0.24);
+  }
+
+  .shell > aside[aria-label="Inspector"] {
+    position: fixed;
+    z-index: 20;
+    top: var(--topbar-h);
+    right: 0;
+    bottom: 0;
+    width: min(var(--inspector-w), 100vw);
+    box-shadow: var(--shadow-float);
+  }
+}

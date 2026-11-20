@@ -1,0 +1,15 @@
+.tag {
+  display: inline-block;
+  padding: 1px 5px 1px;
+  border: 1px solid var(--tag-border);
+  border-radius: var(--r-tag);
+  background: var(--tag-bg);
+  color: var(--tag-ink);
+  font-family: var(--font-num);
+  font-size: var(--fs-12);
+  font-weight: 600;
+  line-height: 14px;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}

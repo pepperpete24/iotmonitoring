@@ -1,0 +1,89 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid transparent;
+  border-radius: var(--r-control);
+  font-size: var(--fs-14);
+  font-weight: 500;
+  white-space: nowrap;
+  background: transparent;
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.large {
+  height: 56px;
+  padding: 0 20px;
+  font-size: var(--fs-16);
+  font-weight: 600;
+}
+
+.primary {
+  background: var(--jade);
+  border-color: var(--jade);
+  color: var(--on-jade);
+}
+
+.primary:hover:not(:disabled) {
+  background: color-mix(in oklab, var(--jade), var(--ink) 14%);
+}
+
+.secondary {
+  border-color: var(--ink-soft);
+  color: var(--ink);
+  background: var(--paper);
+}
+
+.secondary:hover:not(:disabled),
+.quiet:hover:not(:disabled) {
+  background: var(--wash);
+}
+
+.quiet {
+  color: var(--ink);
+  padding: 0 8px;
+}
+
+.segmented {
+  display: inline-flex;
+  border: 1px solid var(--ink-soft);
+  border-radius: var(--r-control);
+  overflow: hidden;
+}
+
+.segment {
+  height: 30px;
+  padding: 0 12px;
+  border: 0;
+  border-left: 1px solid var(--rule);
+  background: var(--paper);
+  font-size: var(--fs-13);
+  font-weight: 500;
+  color: var(--ink-soft);
+}
+
+.segment:first-child {
+  border-left: 0;
+}
+
+.segment:hover {
+  background: var(--wash);
+  color: var(--ink);
+}
+
+.segment[aria-checked="true"] {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.segment:focus-visible {
+  outline-offset: -4px;
+  outline-color: currentColor;
+}

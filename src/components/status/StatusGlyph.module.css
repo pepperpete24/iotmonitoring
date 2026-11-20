@@ -1,0 +1,43 @@
+.glyph {
+  flex: none;
+  display: inline-block;
+  vertical-align: -1px;
+  overflow: visible;
+}
+
+.critFill {
+  fill: var(--critical);
+}
+
+.warnFill {
+  fill: var(--warning);
+  stroke: var(--ink);
+}
+
+.ring {
+  stroke: var(--ink-soft);
+}
+
+.hatchLine {
+  stroke: var(--ink-soft);
+}
+
+/* on a lit annunciator window the glyph takes the window's on-colour */
+.onFill.critical .critFill {
+  fill: var(--on-critical);
+}
+.onFill.warning .warnFill {
+  fill: var(--on-warning);
+  stroke: none;
+}
+.onFill .ring,
+.onFill .hatchLine {
+  stroke: var(--ink);
+}
+
+.label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}

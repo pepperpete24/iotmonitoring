@@ -1,0 +1,297 @@
+/**
+ * The 16 buildings of Pemberton Hall Property Group. Fictional names and
+ * addresses. Topology, devices and signals are generated from these profiles
+ * in M2; Kendall Street Tower is built by hand.
+ */
+import { type AuState, type BuildingType, ZONE_BY_STATE } from "@/domain/common";
+import type { AuZone } from "@/lib/format";
+
+export type OccupancyKind = "apartments" | "rooms" | "beds" | "students" | "tenancies" | "m2";
+
+export interface BuildingProfile {
+  id: string;
+  name: string;
+  shortName: string;
+  address: string;
+  suburb: string;
+  state: AuState;
+  zone: AuZone;
+  type: BuildingType;
+  /** Levels above ground, including ground. */
+  levels: number;
+  basements: number;
+  /** Separate buildings on a campus. */
+  campusBuildings?: number;
+  occupancy: { kind: OccupancyKind; count: number; extra?: string };
+  /** Net lettable area in m2, used to normalise offices, retail and healthcare. */
+  areaM2?: number;
+  deviceCount: number;
+  hasShutoffValve: boolean;
+  storyRole: string;
+}
+
+const b = (p: Omit<BuildingProfile, "zone">): BuildingProfile => ({ ...p, zone: ZONE_BY_STATE[p.state] });
+
+export const BUILDINGS: readonly BuildingProfile[] = [
+  b({
+    id: "kendall-street-tower",
+    name: "Kendall Street Tower",
+    shortName: "Kendall St",
+    address: "41 Kendall Street",
+    suburb: "Surry Hills",
+    state: "NSW",
+    type: "strata",
+    levels: 18,
+    basements: 3,
+    occupancy: { kind: "apartments", count: 126, extra: "4 retail" },
+    deviceCount: 38,
+    hasShutoffValve: true,
+    storyRole: "The hero incident",
+  }),
+  b({
+    id: "ellery-house-hotel",
+    name: "Ellery House Hotel",
+    shortName: "Ellery House",
+    address: "212 Sussex Street",
+    suburb: "Sydney",
+    state: "NSW",
+    type: "hotel",
+    levels: 14,
+    basements: 2,
+    occupancy: { kind: "rooms", count: 212 },
+    deviceCount: 34,
+    hasShutoffValve: true,
+    storyRole: "Gateway GW-04 offline scenario. Leaking isolation valve in history",
+  }),
+  b({
+    id: "marden-square",
+    name: "Marden Square",
+    shortName: "Marden Sq",
+    address: "9 Orchard Road",
+    suburb: "Chatswood",
+    state: "NSW",
+    type: "shopping-centre",
+    levels: 3,
+    basements: 2,
+    occupancy: { kind: "tenancies", count: 88 },
+    areaM2: 31_400,
+    deviceCount: 41,
+    hasShutoffValve: false,
+    storyRole: "Food-court cool rooms. A data gap from a gateway reboot",
+  }),
+  b({
+    id: "lorne-road-medical",
+    name: "Lorne Road Medical Centre",
+    shortName: "Lorne Road",
+    address: "27 Lorne Road",
+    suburb: "Newcastle",
+    state: "NSW",
+    type: "healthcare",
+    levels: 4,
+    basements: 0,
+    occupancy: { kind: "m2", count: 4_850 },
+    areaM2: 4_850,
+    deviceCount: 18,
+    hasShutoffValve: false,
+    storyRole: "Quiet, healthy building",
+  }),
+  b({
+    id: "rosewood-gardens",
+    name: "Rosewood Gardens Aged Care",
+    shortName: "Rosewood Gardens",
+    address: "3 Banksia Avenue",
+    suburb: "Wollongong",
+    state: "NSW",
+    type: "aged-care",
+    levels: 2,
+    basements: 0,
+    occupancy: { kind: "beds", count: 96 },
+    deviceCount: 27,
+    hasShutoffValve: false,
+    storyRole: "Hot water return temperature history",
+  }),
+  b({
+    id: "140-wexford-street",
+    name: "140 Wexford Street",
+    shortName: "140 Wexford St",
+    address: "140 Wexford Street",
+    suburb: "Melbourne",
+    state: "VIC",
+    type: "office",
+    levels: 22,
+    basements: 2,
+    occupancy: { kind: "m2", count: 28_600 },
+    areaM2: 28_600,
+    deviceCount: 36,
+    hasShutoffValve: true,
+    storyRole: "Recurring low pressure. Burst scenario",
+  }),
+  b({
+    id: "parkside-secondary",
+    name: "Parkside Secondary College",
+    shortName: "Parkside College",
+    address: "55 Bellbird Drive",
+    suburb: "Ringwood",
+    state: "VIC",
+    type: "school",
+    levels: 2,
+    basements: 0,
+    campusBuildings: 6,
+    occupancy: { kind: "students", count: 1_100 },
+    deviceCount: 22,
+    hasShutoffValve: false,
+    storyRole: "Rainwater tank low. Term 4 in session",
+  }),
+  b({
+    id: "the-foundry",
+    name: "The Foundry Apartments",
+    shortName: "The Foundry",
+    address: "18 Kerr Lane",
+    suburb: "Richmond",
+    state: "VIC",
+    type: "strata",
+    levels: 9,
+    basements: 1,
+    occupancy: { kind: "apartments", count: 74 },
+    deviceCount: 21,
+    hasShutoffValve: false,
+    storyRole: "Major event in history",
+  }),
+  b({
+    id: "wattle-grove",
+    name: "Wattle Grove Aged Care",
+    shortName: "Wattle Grove",
+    address: "120 Marlin Parade",
+    suburb: "Southport",
+    state: "QLD",
+    type: "aged-care",
+    levels: 3,
+    basements: 0,
+    occupancy: { kind: "beds", count: 120 },
+    deviceCount: 31,
+    hasShutoffValve: false,
+    storyRole: "Cool room warning",
+  }),
+  b({
+    id: "riverbend-plaza",
+    name: "Riverbend Plaza",
+    shortName: "Riverbend",
+    address: "7 Moggill Road",
+    suburb: "Indooroopilly",
+    state: "QLD",
+    type: "shopping-centre",
+    levels: 2,
+    basements: 1,
+    occupancy: { kind: "tenancies", count: 64 },
+    areaM2: 22_800,
+    deviceCount: 33,
+    hasShutoffValve: false,
+    storyRole: "Offline device, flat battery",
+  }),
+  b({
+    id: "quay-street-offices",
+    name: "Quay Street Offices",
+    shortName: "Quay St",
+    address: "88 Quay Street",
+    suburb: "Brisbane",
+    state: "QLD",
+    type: "office",
+    levels: 16,
+    basements: 2,
+    occupancy: { kind: "m2", count: 19_200 },
+    areaM2: 19_200,
+    deviceCount: 24,
+    hasShutoffValve: false,
+    storyRole: "Morning false alarm",
+  }),
+  b({
+    id: "palmcrest-apartments",
+    name: "Palmcrest Apartments",
+    shortName: "Palmcrest",
+    address: "2 Northcliffe Terrace",
+    suburb: "Surfers Paradise",
+    state: "QLD",
+    type: "holiday-apartments",
+    levels: 28,
+    basements: 2,
+    occupancy: { kind: "apartments", count: 168 },
+    deviceCount: 29,
+    hasShutoffValve: true,
+    storyRole: "Major event in history",
+  }),
+  b({
+    id: "hay-street-exchange",
+    name: "Hay Street Exchange",
+    shortName: "Hay St",
+    address: "301 Hay Street",
+    suburb: "Perth",
+    state: "WA",
+    type: "office",
+    levels: 12,
+    basements: 1,
+    occupancy: { kind: "m2", count: 14_100 },
+    areaM2: 14_100,
+    deviceCount: 17,
+    hasShutoffValve: false,
+    storyRole: "Weak-signal device",
+  }),
+  b({
+    id: "glenelg-health-hub",
+    name: "Glenelg Health Hub",
+    shortName: "Glenelg",
+    address: "14 Jetty Road",
+    suburb: "Glenelg",
+    state: "SA",
+    type: "healthcare",
+    levels: 3,
+    basements: 0,
+    occupancy: { kind: "m2", count: 3_900 },
+    areaM2: 3_900,
+    deviceCount: 16,
+    hasShutoffValve: false,
+    storyRole: "Active maintenance mute",
+  }),
+  b({
+    id: "norwood-parade-centre",
+    name: "Norwood Parade Centre",
+    shortName: "Norwood",
+    address: "160 The Parade",
+    suburb: "Norwood",
+    state: "SA",
+    type: "retail",
+    levels: 2,
+    basements: 0,
+    occupancy: { kind: "tenancies", count: 26 },
+    areaM2: 7_600,
+    deviceCount: 14,
+    hasShutoffValve: false,
+    storyRole: "Quiet, healthy building",
+  }),
+  b({
+    id: "wapping-lane",
+    name: "Wapping Lane Apartments",
+    shortName: "Wapping Lane",
+    address: "11 Wapping Lane",
+    suburb: "Hobart",
+    state: "TAS",
+    type: "strata",
+    levels: 7,
+    basements: 1,
+    occupancy: { kind: "apartments", count: 48 },
+    deviceCount: 12,
+    hasShutoffValve: false,
+    storyRole: "Quiet, healthy building",
+  }),
+];
+
+export const buildingById = new Map(BUILDINGS.map((x) => [x.id, x]));
+
+export const ORGANISATION = {
+  id: "pemberton-hall",
+  name: "Pemberton Hall Property Group",
+  shortName: "Pemberton Hall",
+  plan: "Premium multi-building",
+  /** Illustrative tariff, configurable in Settings. */
+  tariffPerKL: 3.5,
+  viewerZone: "Australia/Sydney" as AuZone,
+} as const;

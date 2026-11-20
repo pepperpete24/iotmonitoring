@@ -1,0 +1,103 @@
+.inspector {
+  grid-area: inspector;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: var(--paper);
+  border-left: 1px solid var(--rule);
+  overflow: hidden;
+}
+
+/* Focus moves here programmatically so screen readers land on the detail;
+   the panel itself is not a control, so it draws no ring. */
+.inspector:focus,
+.inspector:focus-visible {
+  outline: none;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 40px;
+  padding: 0 8px 0 16px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.kind {
+  font-family: var(--font-num);
+  font-size: var(--fs-12);
+  font-weight: 500;
+  color: var(--ink-soft);
+}
+
+.close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: var(--r-control);
+  background: transparent;
+}
+
+.close:hover {
+  background: var(--wash);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  overflow: auto;
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: 112px 1fr;
+  gap: 0;
+  border-top: 1px solid var(--rule);
+}
+
+.facts dt,
+.facts dd {
+  padding: 7px 0;
+  border-bottom: 1px solid var(--rule);
+  font-family: var(--font-num);
+  font-size: var(--fs-13);
+}
+
+.facts dt {
+  color: var(--ink-soft);
+}
+
+.note {
+  color: var(--ink-soft);
+  max-width: 72ch;
+}
+
+.action {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--ink-soft);
+  border-radius: var(--r-control);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.action:hover {
+  background: var(--wash);
+}
+
+.symbolBoard {
+  display: flex;
+  align-items: flex-end;
+  gap: 24px;
+  padding: 16px;
+  border: 1px solid var(--rule);
+}

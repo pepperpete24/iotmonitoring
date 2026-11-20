@@ -1,0 +1,63 @@
+.panel {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.window {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--ink-soft);
+  border-radius: var(--r-tag);
+  color: var(--ink-soft);
+  background: transparent;
+  transition: background-color var(--t-alarm) linear, border-color var(--t-alarm) linear;
+}
+
+.compact .window {
+  width: 14px;
+  height: 14px;
+  border-color: var(--rule);
+}
+
+.full .window {
+  gap: 4px;
+  min-width: 64px;
+  height: 28px;
+  padding: 0 8px;
+  font-family: var(--font-num);
+  font-size: var(--fs-12);
+  font-weight: 500;
+}
+
+.window[data-status="critical"] {
+  background: var(--critical);
+  border-color: var(--critical);
+  color: var(--on-critical);
+}
+
+.window[data-status="warning"] {
+  background: var(--warning);
+  border-color: var(--ink);
+  color: var(--on-warning);
+}
+
+/* offline has no colour: the compact window is hatched like the offline glyph;
+   the full window keeps its word readable and shows the glyph beside it */
+.window[data-status="offline"],
+.window[data-status="muted"] {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.compact .window[data-status="offline"] {
+  background-image: repeating-linear-gradient(45deg, var(--ink-soft) 0 1px, transparent 1px 3px);
+}
+
+.compact .window[data-status="offline"] :global(svg) {
+  display: none;
+}
+
+.window[data-status="muted"] {
+  border-style: dashed;
+}

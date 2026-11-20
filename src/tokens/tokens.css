@@ -1,0 +1,140 @@
+/*
+ * Tidemark tokens. Source of truth for every colour, size and space in the app.
+ * Colours validated with the dataviz validator; see docs/design-plan.md section 2.
+ * `npm run palette` re-runs the validator against the values in this file.
+ */
+
+:root,
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  /* surfaces and ink */
+  --ground: #E4E9E7;
+  --paper: #F5F7F6;
+  --ink: #14201C;
+  --ink-soft: #4A5853;
+  --rule: #C5CECB;
+
+  /* measures: one hue per measure, everywhere */
+  --jade: #0A7F59;      /* water: flow, volume, tank level, brand, primary action */
+  --gauge: #2D62A8;     /* pressure */
+  --thermal: #90145F;   /* temperature */
+
+  /* status: reserved, always with a glyph and a word */
+  --critical: #CF3A1E;
+  --warning: #E3A008;
+
+  /* derived */
+  --on-critical: #F5F7F6;
+  --on-warning: #14201C;
+  --on-jade: #F5F7F6;
+  --tag-bg: #14201C;
+  --tag-ink: #F5F7F6;
+  --tag-border: #14201C;
+  --wash: rgb(20 32 28 / 0.06);
+  --wash-strong: rgb(20 32 28 / 0.10);
+  --jade-band: rgb(10 127 89 / 0.14);
+  --shadow-float: 0 6px 20px rgb(15 21 20 / 0.18);
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --ground: #0F1514;
+  --paper: #161D1C;
+  --ink: #E6EDEA;
+  --ink-soft: #9FB0AA;
+  --rule: #2A3532;
+  --jade: #3BA97D;
+  --gauge: #417ACC;
+  --thermal: #B53C7F;
+  --critical: #F06A50;
+  --warning: #F4C542;
+  --on-critical: #0F1514;
+  --on-warning: #0F1514;
+  --on-jade: #0F1514;
+  --tag-bg: #0A0F0E;
+  --tag-ink: #E6EDEA;
+  --tag-border: #2A3532;
+  --wash: rgb(230 237 234 / 0.08);
+  --wash-strong: rgb(230 237 234 / 0.13);
+  --jade-band: rgb(59 169 125 / 0.18);
+  --shadow-float: 0 6px 20px rgb(0 0 0 / 0.45);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --ground: #0F1514;
+    --paper: #161D1C;
+    --ink: #E6EDEA;
+    --ink-soft: #9FB0AA;
+    --rule: #2A3532;
+    --jade: #3BA97D;
+    --gauge: #417ACC;
+    --thermal: #B53C7F;
+    --critical: #F06A50;
+    --warning: #F4C542;
+    --on-critical: #0F1514;
+    --on-warning: #0F1514;
+    --on-jade: #0F1514;
+    --tag-bg: #0A0F0E;
+    --tag-ink: #E6EDEA;
+    --tag-border: #2A3532;
+    --wash: rgb(230 237 234 / 0.08);
+    --wash-strong: rgb(230 237 234 / 0.13);
+    --jade-band: rgb(59 169 125 / 0.18);
+    --shadow-float: 0 6px 20px rgb(0 0 0 / 0.45);
+  }
+}
+
+:root {
+  /* type */
+  --font-ui: "Barlow", sans-serif;
+  --font-num: "Barlow Semi Condensed", "Barlow", sans-serif;
+  --font-id: "Cascadia Mono", Consolas, ui-monospace, monospace;
+
+  --fs-12: 0.75rem;
+  --fs-13: 0.8125rem;
+  --fs-14: 0.875rem;
+  --fs-16: 1rem;
+  --fs-20: 1.25rem;
+  --fs-28: 1.75rem;
+  --fs-44: 2.75rem;
+
+  /* space, 4 px base */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-6: 24px;
+  --s-8: 32px;
+  --s-12: 48px;
+
+  /* shape */
+  --r-tag: 2px;
+  --r-control: 6px;
+  --stroke: 1.5px;
+
+  /* shell */
+  --topbar-h: 48px;
+  --tree-w: 240px;
+  --inspector-w: 360px;
+  --row-h: 32px;
+
+  /* motion */
+  --t-alarm: 200ms;
+  --t-flash: 600ms;
+  --t-panel: 120ms;
+}
+
+:root[data-density="comfortable"] {
+  --row-h: 40px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --t-alarm: 0ms;
+    --t-flash: 0ms;
+    --t-panel: 0ms;
+  }
+}

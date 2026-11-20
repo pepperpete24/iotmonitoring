@@ -1,0 +1,97 @@
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-num);
+  font-size: var(--fs-13);
+  line-height: 16px;
+  font-variant-numeric: tabular-nums;
+  background: var(--paper);
+}
+
+.caption {
+  text-align: left;
+  padding: 0 0 8px;
+  font-family: var(--font-ui);
+  font-size: var(--fs-16);
+  font-weight: 600;
+}
+
+th {
+  height: var(--row-h);
+  padding: 0 12px;
+  border-bottom: 1px solid var(--ink-soft);
+  font-weight: 500;
+  font-size: var(--fs-12);
+  color: var(--ink-soft);
+  text-align: left;
+  white-space: nowrap;
+  vertical-align: bottom;
+  padding-bottom: 6px;
+}
+
+td {
+  height: var(--row-h);
+  padding: 0 12px;
+  border-bottom: 1px solid var(--rule);
+  vertical-align: middle;
+}
+
+.start {
+  text-align: left;
+}
+
+.num {
+  text-align: right;
+}
+
+.center {
+  text-align: center;
+}
+
+.row.selectable {
+  cursor: pointer;
+}
+
+.row.selectable:hover {
+  background: var(--wash);
+}
+
+.row[aria-selected="true"] {
+  background: var(--wash-strong);
+  box-shadow: inset 2px 0 0 var(--ink);
+}
+
+.row:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: -2px;
+}
+
+.sortButton {
+  all: unset;
+  cursor: pointer;
+  display: inline-flex;
+  gap: 4px;
+}
+
+.sortButton:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.sortMark {
+  display: inline-block;
+  width: 0.7em;
+}
+
+.expanded td {
+  height: auto;
+  padding: 8px 12px 12px;
+  background: var(--paper);
+}
+
+.empty {
+  padding: 16px 12px;
+  color: var(--ink-soft);
+  font-family: var(--font-ui);
+  font-size: var(--fs-14);
+}

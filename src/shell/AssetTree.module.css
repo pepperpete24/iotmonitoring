@@ -1,0 +1,89 @@
+.tree {
+  grid-area: tree;
+  overflow: auto;
+  padding: 12px 8px 24px;
+  background: var(--ground);
+  border-right: 1px solid var(--rule);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+}
+
+.node {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 28px;
+  padding-right: 8px;
+  border-radius: 0;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.node:hover {
+  background: var(--wash);
+}
+
+.node[aria-selected="true"] {
+  background: var(--paper);
+  box-shadow: inset 2px 0 0 var(--ink);
+  font-weight: 600;
+}
+
+.node:focus-visible {
+  outline-offset: -2px;
+}
+
+.l1 {
+  padding-left: 0;
+  font-weight: 600;
+}
+.l2 {
+  padding-left: 12px;
+}
+.l3 {
+  padding-left: 28px;
+}
+
+.label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.count {
+  color: var(--ink-soft);
+  font-family: var(--font-num);
+  font-weight: 400;
+}
+
+.twisty,
+.spacer {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.twisty::before {
+  content: "";
+  width: 0;
+  height: 0;
+  border-left: 4px solid var(--ink-soft);
+  border-top: 3.5px solid transparent;
+  border-bottom: 3.5px solid transparent;
+}
+
+.twisty[data-open="true"]::before {
+  transform: rotate(90deg);
+}
+
+.message {
+  padding: 8px;
+  color: var(--ink-soft);
+}

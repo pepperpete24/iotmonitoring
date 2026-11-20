@@ -1,0 +1,38 @@
+/* Floating layers: the one shadow, used only here and on the demo tray and drawers. */
+
+.tooltip {
+  z-index: 50;
+  max-width: 280px;
+  padding: 4px 8px;
+  border: 1px solid var(--rule);
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: var(--shadow-float);
+  font-family: var(--font-num);
+  font-size: var(--fs-13);
+  line-height: 16px;
+}
+
+.menu {
+  z-index: 50;
+  min-width: 180px;
+  padding: 4px 0;
+  border: 1px solid var(--rule);
+  background: var(--paper);
+  box-shadow: var(--shadow-float);
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  height: 32px;
+  padding: 0 12px;
+  color: var(--ink);
+  text-decoration: none;
+  outline: none;
+  cursor: pointer;
+}
+
+.menu-item[data-highlighted] {
+  background: var(--wash-strong);
+}
