@@ -4,7 +4,7 @@
  */
 import { useEffect, useState } from "react";
 import { create } from "zustand";
-import { DEMO_START } from "@/mock/scenarios/startState";
+import { DEMO_START } from "@/mock/scenarios/clock";
 import type { UtcMs } from "@/domain/common";
 
 export type Speed = 1 | 10 | 60;

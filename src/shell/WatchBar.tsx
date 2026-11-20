@@ -5,7 +5,7 @@
  */
 import { useState } from "react";
 import { usePortfolioStatus } from "@/api/queries";
-import type { OpenIncidentSummary } from "@/api/types";
+import type { IncidentSummary as OpenIncidentSummary } from "@/api/types";
 import { StatusGlyph } from "@/components/status/StatusGlyph";
 import { useSimNow } from "@/state/clock";
 import { buildingById } from "@/mock/world/buildings";

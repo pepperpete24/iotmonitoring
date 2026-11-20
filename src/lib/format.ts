@@ -145,26 +145,49 @@ function partsOf(f: Intl.DateTimeFormat, utcMs: number): Parts {
   };
 }
 
-const localFormats = new Map<string, Intl.DateTimeFormat>();
+/**
+ * Offset cache keyed by zone and UTC hour. Every Australian zone changes
+ * offset on an exact UTC hour, so one lookup per hour is exact.
+ */
+const offsetCache = new Map<string, number>();
+export function cachedOffsetMinutes(utcMs: number, zone: string): number {
+  const hourKey = `${zone}|${Math.floor(utcMs / 3_600_000)}`;
+  let off = offsetCache.get(hourKey);
+  if (off === undefined) {
+    off = zoneOffsetMinutes(Math.floor(utcMs / 3_600_000) * 3_600_000, zone);
+    if (offsetCache.size > 200_000) offsetCache.clear();
+    offsetCache.set(hourKey, off);
+  }
+  return off;
+}
+
 /** Wall-clock parts of `utcMs` in `zone`. */
 export function localParts(utcMs: number, zone: string): Parts {
-  let f = localFormats.get(zone);
-  if (!f) {
-    f = new Intl.DateTimeFormat("en-AU", {
-      timeZone: zone,
-      hourCycle: "h23",
-      year: "numeric",
-      month: "numeric",
-      day: "numeric",
-      hour: "numeric",
-      minute: "numeric",
-      second: "numeric",
-    });
-    localFormats.set(zone, f);
-  }
-  const p = partsOf(f, utcMs);
-  p.weekday = new Date(Date.UTC(p.year, p.month - 1, p.day)).getUTCDay();
-  return p;
+  const d = new Date(utcMs + cachedOffsetMinutes(utcMs, zone) * 60_000);
+  return {
+    year: d.getUTCFullYear(),
+    month: d.getUTCMonth() + 1,
+    day: d.getUTCDate(),
+    hour: d.getUTCHours(),
+    minute: d.getUTCMinutes(),
+    second: d.getUTCSeconds(),
+    weekday: d.getUTCDay(),
+  };
+}
+
+/** Local hour of day as a fraction, 0 to 24. */
+export function localHour(utcMs: number, zone: string): number {
+  const ms = (utcMs + cachedOffsetMinutes(utcMs, zone) * 60_000) % 86_400_000;
+  return (ms < 0 ? ms + 86_400_000 : ms) / 3_600_000;
+}
+
+/** UTC time of a local wall-clock moment in `zone`. */
+export function fromLocal(zone: string, y: number, mo: number, d: number, h = 0, mi = 0): number {
+  const guess = Date.UTC(y, mo - 1, d, h, mi);
+  const off1 = zoneOffsetMinutes(guess, zone);
+  const t = guess - off1 * 60_000;
+  const off2 = zoneOffsetMinutes(t, zone);
+  return off2 === off1 ? t : guess - off2 * 60_000;
 }
 
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];

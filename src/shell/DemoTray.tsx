@@ -5,6 +5,9 @@
 import { useEffect } from "react";
 import { X } from "lucide-react";
 import { Button, Segmented } from "@/components/Button";
+import { useQueryClient } from "@tanstack/react-query";
+import { useCommand } from "@/api/queries";
+import { resetDemo } from "@/mock/runtime";
 import { type Speed, useClockStore } from "@/state/clock";
 import { type Density, type ThemePref, useUi } from "@/state/ui";
 import styles from "./DemoTray.module.css";
@@ -18,7 +21,13 @@ export function DemoTray() {
   const setDensity = useUi((s) => s.setDensity);
   const speed = useClockStore((s) => s.speed);
   const setSpeed = useClockStore((s) => s.setSpeed);
-  const reset = useClockStore((s) => s.reset);
+  const qc = useQueryClient();
+  const command = useCommand();
+  const reset = () => {
+    resetDemo();
+    void qc.invalidateQueries();
+  };
+  const trigger = (scenario: "burst" | "door" | "gateway" | "leak-false-alarm") => command.mutate({ type: "trigger", scenario, by: "helen" });
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -65,6 +74,24 @@ export function DemoTray() {
         <Button variant="quiet" onClick={reset}>
           Reset to 07:48
         </Button>
+      </div>
+      <div className={styles.block}>
+        <span className={styles.label}>Scenarios</span>
+        <ul className={styles.scenarios}>
+          <li>
+            <Button onClick={() => trigger("burst")}>Burst main, 140 Wexford Street Level 9</Button>
+          </li>
+          <li>
+            <Button onClick={() => trigger("door")}>Cool room door left open, Wattle Grove</Button>
+          </li>
+          <li>
+            <Button onClick={() => trigger("gateway")}>Gateway GW-04 offline, Ellery House Hotel</Button>
+          </li>
+          <li>
+            <Button onClick={() => trigger("leak-false-alarm")}>Leak sensor wet then dry, Lorne Road</Button>
+          </li>
+        </ul>
+        {command.isError && <p className={styles.error}>{String((command.error as Error).message)}</p>}
       </div>
       <div className={styles.row}>
         <span className={styles.label}>Theme</span>

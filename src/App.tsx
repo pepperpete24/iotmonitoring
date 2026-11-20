@@ -7,6 +7,10 @@ import { SymbolsPage } from "@/dev/SymbolsPage";
 import { TokensPage } from "@/dev/TokensPage";
 import { applyDocumentPrefs, useUi } from "@/state/ui";
 import { buildingById } from "@/mock/world/buildings";
+import { startRuntime } from "@/mock/runtime";
+import { useLiveUpdates } from "@/api/live";
+
+startRuntime();
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { refetchOnWindowFocus: false, retry: 1 } },
@@ -101,6 +105,11 @@ const router = createBrowserRouter([
   },
 ]);
 
+function Live() {
+  useLiveUpdates();
+  return null;
+}
+
 export function App() {
   const theme = useUi((s) => s.theme);
   const density = useUi((s) => s.density);
@@ -108,6 +117,7 @@ export function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <Live />
       <RouterProvider router={router} />
     </QueryClientProvider>
   );

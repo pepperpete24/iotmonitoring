@@ -57,3 +57,15 @@ test("Shift+D opens the demo tray and night theme applies", async ({ page }) => 
   const bg = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
   expect(bg).toBe("rgb(15, 21, 20)");
 });
+
+test("a demo trigger plays out at 60x and survives a reload", async ({ page }) => {
+  await page.goto("/portfolio");
+  await page.keyboard.press("Shift+D");
+  const tray = page.getByRole("region", { name: "Demo tray" });
+  await tray.getByRole("radio", { name: "60x" }).click();
+  await tray.getByRole("button", { name: /Burst main/ }).click();
+  const watch = page.getByRole("region", { name: "Watch" });
+  await expect(watch.getByRole("button", { name: /140 Wexford Street/ })).toBeVisible({ timeout: 15_000 });
+  await page.reload();
+  await expect(page.getByRole("region", { name: "Watch" }).getByRole("button", { name: /140 Wexford Street/ })).toBeVisible();
+});

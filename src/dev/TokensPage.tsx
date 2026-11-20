@@ -99,7 +99,7 @@ export function TokensPage() {
       render: (b) => (b.status !== "normal" ? <StatusGlyph status={b.status} title={b.status} /> : null),
     },
     { key: "ann", header: "Annunciator", width: 140, render: (b) => <Annunciator state={b.annunciator} variant="compact" label={b.name} /> },
-    { key: "devices", header: "Devices", align: "num", sortValue: (b) => b.deviceCount, render: (b) => formatNumber(b.deviceCount) },
+    { key: "devices", header: "Devices", align: "num", sortValue: (b) => b.devicesTotal, render: (b) => formatNumber(b.devicesTotal) },
     { key: "local", header: "Local time", align: "num", render: (b) => formatTimeZoned(now, b.zone) },
   ];
 

@@ -77,3 +77,25 @@
   font-family: var(--font-num);
   font-size: var(--fs-13);
 }
+
+.block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.scenarios {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.scenarios button {
+  width: 100%;
+  justify-content: flex-start;
+}
+
+.error {
+  color: var(--ink);
+  font-size: var(--fs-13);
+}
