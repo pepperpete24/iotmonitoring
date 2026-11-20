@@ -1,6 +1,12 @@
 .panel {
   display: inline-flex;
+  flex-wrap: wrap;
   gap: 2px;
+  max-width: 100%;
+}
+
+.compact {
+  flex-wrap: nowrap;
 }
 
 .window {

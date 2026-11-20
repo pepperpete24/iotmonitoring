@@ -101,3 +101,107 @@
   padding: 16px;
   border: 1px solid var(--rule);
 }
+
+.deviceHead {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-num);
+  font-size: var(--fs-13);
+  color: var(--ink-soft);
+}
+
+.statusLine {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-num);
+  font-size: var(--fs-13);
+}
+
+.liveValue {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--rule);
+}
+
+.sectionTitle {
+  font-size: var(--fs-14);
+  font-weight: 600;
+}
+
+.bullets li {
+  padding: 2px 0 2px 12px;
+  position: relative;
+  font-size: var(--fs-13);
+}
+
+.bullets li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 10px;
+  width: 4px;
+  height: 1px;
+  background: var(--ink-soft);
+}
+
+.buttonRow {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.confirmBox {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.form label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: var(--fs-13);
+  color: var(--ink-soft);
+}
+
+.form input,
+.form select,
+.form textarea {
+  height: 32px;
+  padding: 0 8px;
+  border: 1px solid var(--ink-soft);
+  border-radius: var(--r-control);
+  background: var(--paper);
+  color: var(--ink);
+  font-size: var(--fs-14);
+}
+
+.form textarea {
+  height: auto;
+  min-height: 64px;
+  padding: 6px 8px;
+}
+
+.error {
+  padding: 6px 8px;
+  border-left: 3px solid var(--critical);
+  background: var(--wash);
+  font-size: var(--fs-13);
+}

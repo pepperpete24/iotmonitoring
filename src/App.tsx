@@ -4,9 +4,10 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AppShell } from "@/shell/AppShell";
 import { Pending } from "@/features/Pending";
 import { SymbolsPage } from "@/dev/SymbolsPage";
+import { BuildingPage } from "@/features/building/BuildingPage";
+import { PortfolioPage } from "@/features/portfolio/PortfolioPage";
 import { TokensPage } from "@/dev/TokensPage";
 import { applyDocumentPrefs, useUi } from "@/state/ui";
-import { buildingById } from "@/mock/world/buildings";
 import { startRuntime } from "@/mock/runtime";
 import { useLiveUpdates } from "@/api/live";
 
@@ -15,22 +16,6 @@ startRuntime();
 const queryClient = new QueryClient({
   defaultOptions: { queries: { refetchOnWindowFocus: false, retry: 1 } },
 });
-
-function BuildingPending() {
-  const { id } = useParams();
-  const b = id ? buildingById.get(id) : undefined;
-  return (
-    <Pending
-      title={b?.name ?? "Building not found"}
-      job={
-        b
-          ? "The riser diagram, live values by system, charts, devices, incidents and maintenance for this building."
-          : "No building matches this link. Choose one from the list on the left."
-      }
-      milestone="M3"
-    />
-  );
-}
 
 function IncidentPending() {
   const { id } = useParams();
@@ -48,17 +33,8 @@ const router = createBrowserRouter([
     element: <AppShell />,
     children: [
       { index: true, element: <Navigate to="/portfolio" replace /> },
-      {
-        path: "portfolio",
-        element: (
-          <Pending
-            title="Portfolio"
-            job="A briefing sentence computed from the data, then a ledger of all 16 buildings sorted by attention."
-            milestone="M3"
-          />
-        ),
-      },
-      { path: "buildings/:id", element: <BuildingPending /> },
+      { path: "portfolio", element: <PortfolioPage /> },
+      { path: "buildings/:id", element: <BuildingPage /> },
       {
         path: "incidents",
         element: (

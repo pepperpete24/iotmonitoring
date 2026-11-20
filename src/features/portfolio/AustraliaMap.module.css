@@ -1,0 +1,53 @@
+.figure {
+  margin: 0;
+  max-width: 720px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.land {
+  fill: none;
+  stroke: var(--ink-soft);
+  stroke-width: 1;
+  stroke-linejoin: round;
+}
+
+.pin {
+  cursor: pointer;
+  outline: none;
+}
+
+.hit {
+  fill: transparent;
+}
+
+.pin:hover .hit,
+.pin[aria-pressed="true"] .hit {
+  fill: var(--wash-strong);
+}
+
+.pin:focus-visible .hit {
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+
+.dot {
+  fill: var(--ink);
+}
+
+.label {
+  font-family: var(--font-num);
+  font-size: 12px;
+  font-weight: 600;
+  fill: var(--ink);
+  paint-order: stroke;
+  stroke: var(--paper);
+  stroke-width: 3px;
+}

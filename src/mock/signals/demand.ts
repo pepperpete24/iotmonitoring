@@ -213,7 +213,10 @@ export function demandLpm(b: BuildingProfile, t: number): number {
   const night = nightFloor(b, t);
   const model = demandModel(b);
   // offices, schools and clinics use far less at weekends
-  const volume = weekend && (b.type === "office" || b.type === "school" || b.type === "healthcare") ? model.dailyL * 0.12 : model.dailyL;
+  const base = weekend && (b.type === "office" || b.type === "school" || b.type === "healthcare") ? model.dailyL * 0.12 : model.dailyL;
+  // Day to day, use varies with weather and occupancy: about ±8%, fixed per building and date.
+  const dayKey = `${b.id}#${p.year}-${p.month}-${p.day}`;
+  const volume = base * (1 + (((hashString(dayKey) % 2001) / 1000 - 1) * 0.08));
   const k = Math.max(0, volume - 1440 * night) / shapeIntegral(b.type, weekend);
   return night + k * shapeAt(SHAPES[b.type][weekend ? "weekend" : "weekday"], h);
 }

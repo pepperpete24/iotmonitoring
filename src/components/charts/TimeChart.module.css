@@ -1,0 +1,246 @@
+.figure {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transition: opacity var(--t-panel) linear;
+}
+
+.stale {
+  opacity: 0.7;
+}
+
+.caption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-weight: 600;
+  font-size: var(--fs-14);
+}
+
+.switch {
+  display: inline-flex;
+  border: 1px solid var(--rule);
+  border-radius: var(--r-control);
+  overflow: hidden;
+}
+
+.switch button {
+  height: 24px;
+  padding: 0 8px;
+  border: 0;
+  background: transparent;
+  font-size: var(--fs-12);
+  font-family: var(--font-num);
+  color: var(--ink-soft);
+}
+
+.switch button[aria-pressed="true"] {
+  background: var(--wash-strong);
+  color: var(--ink);
+}
+
+.wrap {
+  position: relative;
+  width: 100%;
+}
+
+.svg {
+  display: block;
+  overflow: visible;
+  touch-action: pan-y;
+}
+
+.svg:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.night {
+  fill: var(--wash);
+}
+
+.nightLabel,
+.tick,
+.thresholdLabel,
+.panelUnit {
+  font-family: var(--font-num);
+  font-size: 11px;
+  fill: var(--ink-soft);
+}
+
+.tickMajor {
+  font-family: var(--font-num);
+  font-size: 11px;
+  font-weight: 600;
+  fill: var(--ink);
+}
+
+.panelTitle {
+  font-family: var(--font-num);
+  font-size: var(--fs-12);
+  font-weight: 600;
+  fill: var(--ink);
+}
+
+.grid {
+  stroke: var(--rule);
+  stroke-width: 1;
+}
+
+.axis {
+  stroke: var(--ink-soft);
+  stroke-width: 1;
+}
+
+.line {
+  fill: none;
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.threshold {
+  stroke: var(--ink-soft);
+  stroke-width: 1;
+  stroke-dasharray: 4 3;
+}
+
+.band {
+  fill: var(--jade-band);
+}
+
+.gap {
+  stroke: none;
+}
+
+.hatchLine {
+  stroke: var(--ink-soft);
+  opacity: 0.6;
+}
+
+.stateTrack {
+  fill: none;
+  stroke: var(--rule);
+}
+
+.cursor {
+  stroke: var(--ink);
+  stroke-width: 1;
+}
+
+.dot {
+  stroke: var(--paper);
+  stroke-width: 2;
+}
+
+.eventLine {
+  stroke: var(--ink-soft);
+  stroke-width: 1;
+  stroke-dasharray: 2 3;
+}
+
+.eventDot {
+  fill: var(--paper);
+  stroke: var(--ink);
+  stroke-width: 1.5;
+}
+
+.eventKey {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  font-family: var(--font-num);
+  font-size: var(--fs-12);
+  color: var(--ink-soft);
+}
+
+.eventKey li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.eventKeyDot {
+  width: 8px;
+  height: 8px;
+  border: 1.5px solid var(--ink);
+  border-radius: 50%;
+}
+
+.tooltip {
+  position: absolute;
+  z-index: 5;
+  min-width: 160px;
+  padding: 6px 8px;
+  border: 1px solid var(--rule);
+  background: var(--paper);
+  box-shadow: var(--shadow-float);
+  font-family: var(--font-num);
+  font-size: var(--fs-12);
+  pointer-events: none;
+}
+
+.ttTime {
+  color: var(--ink-soft);
+  margin-bottom: 2px;
+}
+
+.ttRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.ttRow strong {
+  font-weight: 600;
+  font-size: var(--fs-13);
+}
+
+.ttKey {
+  width: 10px;
+  height: 2px;
+  flex: none;
+}
+
+.ttName {
+  color: var(--ink-soft);
+}
+
+.tableWrap {
+  max-height: 320px;
+  overflow: auto;
+  border-top: 1px solid var(--ink-soft);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-num);
+  font-size: var(--fs-13);
+  font-variant-numeric: tabular-nums;
+}
+
+.table th,
+.table td {
+  height: 28px;
+  padding: 0 8px;
+  border-bottom: 1px solid var(--rule);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.table th {
+  position: sticky;
+  top: 0;
+  background: var(--paper);
+  font-size: var(--fs-12);
+  font-weight: 500;
+  color: var(--ink-soft);
+}
+
+.num {
+  text-align: right !important;
+}

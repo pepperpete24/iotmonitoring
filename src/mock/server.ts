@@ -7,6 +7,7 @@ import { CommandError, type Command } from "@/mock/engine/engine";
 import { engine, runCommand, sync } from "@/mock/runtime";
 import { personById, PEOPLE } from "@/mock/world/people";
 import { incidentDetail, incidentSummary, logbookView, portfolioStatus } from "./views";
+import { buildingDetail, series } from "./views-building";
 
 interface MockResponse {
   status: number;
@@ -20,6 +21,29 @@ const notFound = (what: string): MockResponse => ({ status: 404, body: `No ${wha
 
 const routes: Array<[method: string, pattern: RegExp, keys: string[], handler: Handler]> = [
   ["GET", /^\/api\/portfolio\/status$/, [], () => ok(portfolioStatus(engine, engine.now))],
+
+  [
+    "GET",
+    /^\/api\/buildings\/([^/]+)$/,
+    ["id"],
+    ({ id }) => {
+      const b = buildingDetail(engine, id ?? "", engine.now);
+      return b ? ok(b) : notFound(`building ${id}`);
+    },
+  ],
+
+  [
+    "GET",
+    /^\/api\/series$/,
+    [],
+    (_p, q) => {
+      const channel = q.get("channel") ?? "";
+      const to = Math.min(Number(q.get("to") ?? engine.now), engine.now);
+      const from = Number(q.get("from") ?? to - Number(q.get("span") ?? 86_400_000));
+      const s = series(engine, channel, from, to, Number(q.get("points") ?? 400));
+      return s ? ok(s) : notFound(`channel ${channel}`);
+    },
+  ],
 
   [
     "GET",

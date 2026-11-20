@@ -133,3 +133,7 @@ a {
 @media print {
   body { background: #fff; }
 }
+
+.t-briefing strong {
+  white-space: nowrap;
+}

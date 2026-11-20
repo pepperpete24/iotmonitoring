@@ -1,0 +1,249 @@
+.frame {
+  position: relative;
+  border: 1px solid var(--rule);
+  background: var(--paper);
+}
+
+.controls {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
+  display: flex;
+  border: 1px solid var(--rule);
+  border-radius: var(--r-control);
+  background: var(--paper);
+  overflow: hidden;
+}
+
+.controls button {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-left: 1px solid var(--rule);
+  background: transparent;
+}
+
+.controls button:first-child {
+  border-left: 0;
+}
+
+.controls button:hover {
+  background: var(--wash);
+}
+
+.viewport {
+  overflow-x: auto;
+  overflow-y: hidden;
+  cursor: grab;
+  touch-action: pan-y;
+}
+
+.viewport:active {
+  cursor: grabbing;
+}
+
+.svg {
+  display: block;
+}
+
+.levelLabel {
+  font-family: var(--font-num);
+  font-size: 13px;
+  font-weight: 600;
+  fill: var(--ink);
+}
+
+.laneLabel {
+  font-family: var(--font-num);
+  font-size: 11px;
+  fill: var(--ink-soft);
+}
+
+.datum {
+  stroke: var(--rule);
+  stroke-width: 1;
+}
+
+.datumMark {
+  fill: none;
+  stroke: var(--ink-soft);
+  stroke-width: 1;
+}
+
+.band {
+  stroke: none;
+  opacity: 0.55;
+}
+
+.hatchLine {
+  stroke: var(--rule);
+  stroke-width: 1.5;
+}
+
+.bandLabel {
+  font-family: var(--font-num);
+  font-size: 12px;
+  fill: var(--ink-soft);
+}
+
+.rowHover {
+  fill: var(--wash);
+}
+
+.pipe {
+  stroke: var(--jade);
+  stroke-width: 2.5;
+  stroke-linecap: square;
+}
+
+.branch {
+  stroke: var(--jade);
+  stroke-width: 1.5;
+}
+
+.arrow {
+  fill: var(--jade);
+}
+
+.faultZone {
+  fill: var(--jade-band);
+  stroke: var(--jade);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+}
+
+.faultCritical,
+.faultWarning {
+  stroke-width: 4;
+  stroke-dasharray: 6 3;
+  stroke-linecap: butt;
+}
+
+.faultCritical {
+  stroke: var(--critical);
+}
+
+.faultWarning {
+  stroke: var(--warning);
+}
+
+.item {
+  cursor: pointer;
+  outline: none;
+  transition: opacity var(--t-panel) linear;
+}
+
+.item:focus-visible .hit,
+.item:focus-visible .selected {
+  stroke: var(--ink);
+  stroke-width: 2;
+  stroke-dasharray: none;
+}
+
+.hit {
+  fill: transparent;
+}
+
+.item:hover .hit {
+  fill: var(--wash);
+}
+
+.selected {
+  fill: var(--wash-strong);
+  stroke: var(--ink);
+  stroke-width: 1.5;
+}
+
+.dim {
+  opacity: 0.38;
+}
+
+.rowDim {
+  opacity: 0.55;
+}
+
+.symbolBack {
+  fill: var(--paper);
+}
+
+.symbol {
+  pointer-events: none;
+}
+
+.glyphBack {
+  fill: var(--paper);
+}
+
+.tag {
+  fill: var(--tag-bg);
+  stroke: var(--tag-border);
+  stroke-width: 1;
+}
+
+.tagText {
+  font-family: var(--font-num);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  fill: var(--tag-ink);
+}
+
+.compactTag {
+  font-family: var(--font-num);
+  font-size: 10px;
+  font-weight: 600;
+  fill: var(--ink-soft);
+}
+
+.value {
+  font-family: var(--font-num);
+  font-size: 13px;
+  font-weight: 500;
+  fill: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.unit {
+  font-size: 11px;
+  font-weight: 400;
+  fill: var(--ink-soft);
+}
+
+.tbFrame {
+  fill: var(--paper);
+  stroke: var(--ink);
+  stroke-width: 1;
+}
+
+.tbRule {
+  stroke: var(--ink);
+  stroke-width: 1;
+}
+
+.tbTitle {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 600;
+  fill: var(--ink);
+}
+
+.tbText {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  fill: var(--ink);
+}
+
+.tbSoft,
+.tbLegend {
+  font-family: var(--font-num);
+  font-size: 10px;
+  fill: var(--ink-soft);
+}
+
+.tbSymbol {
+  color: var(--ink);
+}

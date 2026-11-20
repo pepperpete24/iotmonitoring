@@ -15,11 +15,17 @@ const heights = { 1920: 1080, 1440: 900, 1024: 768, 768: 1024, 390: 844 };
 const PORT = 4179;
 
 const SCREENS = [
+  { name: "portfolio", path: "/portfolio" },
+  { name: "portfolio-all", path: "/portfolio?view=all", full: true },
+  { name: "portfolio-map", path: "/portfolio?show=map" },
+  { name: "building-kendall", path: "/buildings/kendall-street-tower", full: true },
+  { name: "building-kendall-device", path: "/buildings/kendall-street-tower?inspect=device:kendall-street-tower%2FWL-B2-03" },
+  { name: "building-kendall-charts", path: "/buildings/kendall-street-tower?tab=charts", full: true },
+  { name: "building-palmcrest-health", path: "/buildings/palmcrest-apartments?layer=health", full: true },
+  { name: "building-parkside", path: "/buildings/parkside-secondary", full: true },
   { name: "shell-incident-inspector", path: "/portfolio?inspect=incident:I-2026-0167" },
-  { name: "shell-warnings-open", path: "/portfolio", click: "Show" },
-  { name: "dev-tokens", path: "/dev/tokens", full: true },
   { name: "dev-symbols", path: "/dev/symbols?inspect=symbol:isolation-valve", full: true },
-  { name: "tree-drawer", path: "/incidents", widthOnly: [1024], click: "Show buildings", byLabel: true },
+  { name: "tree-drawer", path: "/buildings/wattle-grove", widthOnly: [1024], click: "Show buildings", byLabel: true },
 ];
 
 mkdirSync(out, { recursive: true });

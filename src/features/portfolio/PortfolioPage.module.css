@@ -1,0 +1,134 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px 32px 64px;
+  min-width: 0;
+}
+
+.briefing {
+  max-width: 64ch;
+}
+
+.water {
+  color: var(--ink-soft);
+  max-width: 72ch;
+}
+
+.soft {
+  color: var(--ink-soft);
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding-top: 8px;
+}
+
+.scope {
+  font-size: var(--fs-13);
+}
+
+.linkButton {
+  padding: 0;
+  border: 0;
+  background: none;
+  text-decoration: underline;
+  font-size: inherit;
+}
+
+.retry {
+  align-self: flex-start;
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--ink-soft);
+  border-radius: var(--r-control);
+  background: var(--paper);
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.empty {
+  color: var(--ink-soft);
+  max-width: 72ch;
+}
+
+.building {
+  display: flex;
+  flex-direction: column;
+  padding: 5px 0;
+}
+
+.name {
+  font-family: var(--font-ui);
+  font-size: var(--fs-14);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.name:hover {
+  text-decoration: underline;
+}
+
+.bullet {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.bulletBar {
+  fill: var(--jade);
+}
+
+.bulletTick {
+  stroke: var(--ink);
+  stroke-width: 1.5;
+}
+
+.night {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.unit {
+  font-size: var(--fs-12);
+  color: var(--ink-soft);
+}
+
+.diff {
+  font-size: var(--fs-12);
+}
+
+.expanded {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  padding-left: 4px;
+}
+
+.expandedText {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 72ch;
+}
+
+.links {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 767px) {
+  .page {
+    padding: 16px 16px 64px;
+  }
+}

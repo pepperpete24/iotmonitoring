@@ -1,0 +1,34 @@
+.glyph {
+  display: block;
+  flex: none;
+}
+
+.riser {
+  stroke: var(--jade);
+  stroke-width: 1.5;
+}
+
+.level {
+  stroke: var(--rule);
+  stroke-width: 1;
+}
+
+.ground {
+  stroke: var(--ink-soft);
+  stroke-width: 1;
+}
+
+.marked {
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+
+.crit {
+  fill: var(--critical);
+}
+
+.warn {
+  fill: var(--warning);
+  stroke: var(--ink);
+  stroke-width: 1;
+}

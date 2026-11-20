@@ -23,6 +23,8 @@ export interface BuildingSummary {
   state: AuState;
   zone: AuZone;
   type: BuildingType;
+  lat: number;
+  lon: number;
   status: Status | "normal";
   annunciator: AnnunciatorState;
   openIncidents: number;
@@ -130,6 +132,100 @@ export interface LogbookView {
   deviceId: string | null;
   target: string;
   detail: string;
+}
+
+export interface ReadingView {
+  measure: string;
+  value: number;
+  unit: string;
+  at: UtcMs;
+}
+
+export interface DeviceLive {
+  id: string;
+  tag: string;
+  kind: string;
+  kindLabel: string;
+  model: string;
+  location: string;
+  buildingId: string;
+  levelId: string;
+  systemId: string | null;
+  equipmentId: string | null;
+  status: "online" | "offline" | "paused" | "muted";
+  muteReason: string | null;
+  muteUntil: UtcMs | null;
+  alert: Severity | null;
+  /** The open incident this device's alert belongs to. */
+  openIncidentId: string | null;
+  readings: ReadingView[];
+  lastUplink: UtcMs | null;
+  battery: number;
+  rssi: number;
+  snr: number;
+  link: string;
+  gatewayTag: string | null;
+  firmware: string;
+  firmwareLatest: boolean;
+  devEui: string;
+}
+
+export interface LevelView {
+  id: string;
+  label: string;
+  short: string;
+  heightM: number;
+  order: number;
+}
+
+export interface SystemView {
+  id: string;
+  name: string;
+  type: string;
+  servesFrom: string;
+  servesTo: string;
+  lane: number;
+}
+
+export interface EquipmentView {
+  id: string;
+  tag: string;
+  name: string;
+  kind: string;
+  levelId: string;
+  systemId: string;
+}
+
+/** GET /api/buildings/:id */
+export interface BuildingDetail {
+  summary: BuildingSummary;
+  typeLabel: string;
+  levelsAbove: number;
+  basements: number;
+  campusBuildings: number | null;
+  occupancy: string;
+  contacts: Array<{ name: string; title: string; mobileMasked: string; email: string }>;
+  roster: string[];
+  levels: LevelView[];
+  systems: SystemView[];
+  equipment: EquipmentView[];
+  devices: DeviceLive[];
+  incidents: IncidentSummary[];
+  valve: { tag: string; closed: boolean; isolation: string } | null;
+  /** Where water is escaping, for the riser drawing: from the meter that sees it to where it is. */
+  waterFault: { incidentId: string; severity: Severity; meterLevelId: string; faultLevelId: string; systemId: string | null } | null;
+}
+
+/** GET /api/series */
+export interface SeriesView {
+  channelId: string;
+  measure: string;
+  unit: string;
+  from: UtcMs;
+  to: UtcMs;
+  stepMs: number;
+  points: Array<[UtcMs, number | null]>;
+  gaps: Array<{ from: UtcMs; to: UtcMs; reason: string }>;
 }
 
 /** GET /api/incidents/:id */

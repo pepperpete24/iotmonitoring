@@ -1,0 +1,119 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px 32px 64px;
+  min-width: 0;
+}
+
+.loading {
+  color: var(--ink-soft);
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.titleRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.localTime {
+  font-family: var(--font-num);
+  font-size: var(--fs-14);
+  color: var(--ink-soft);
+}
+
+.facts {
+  color: var(--ink-soft);
+  max-width: 90ch;
+}
+
+.sentence {
+  margin-top: 4px;
+}
+
+.drawing {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.drawingBar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.refreshing {
+  /* refetch keeps the frame: no flash, no layout jump */
+}
+
+.tabs {
+  display: flex;
+  flex-direction: column;
+}
+
+.tabList {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--rule);
+  overflow-x: auto;
+}
+
+.tab {
+  position: relative;
+  height: 40px;
+  padding: 0 12px;
+  border: 0;
+  background: transparent;
+  color: var(--ink-soft);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.tab:hover {
+  color: var(--ink);
+}
+
+.tab[data-state="active"] {
+  color: var(--ink);
+}
+
+.tab[data-state="active"]::after {
+  content: "";
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: -1px;
+  height: 2px;
+  background: var(--ink);
+}
+
+.count {
+  font-family: var(--font-num);
+  font-size: var(--fs-12);
+  color: var(--ink-soft);
+}
+
+.panel {
+  padding-top: 16px;
+}
+
+.panel:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 4px;
+}
+
+@media (max-width: 767px) {
+  .page {
+    padding: 16px 16px 64px;
+  }
+}

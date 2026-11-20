@@ -26,6 +26,9 @@ export interface BuildingProfile {
   /** Net lettable area in m2, used to normalise offices, retail and healthcare. */
   areaM2?: number;
   deviceCount: number;
+  /** Approximate position, for the portfolio map. */
+  lat: number;
+  lon: number;
   hasShutoffValve: boolean;
   storyRole: string;
 }
@@ -35,6 +38,8 @@ const b = (p: Omit<BuildingProfile, "zone">): BuildingProfile => ({ ...p, zone: 
 export const BUILDINGS: readonly BuildingProfile[] = [
   b({
     id: "kendall-street-tower",
+    lat: -33.886,
+    lon: 151.211,
     name: "Kendall Street Tower",
     shortName: "Kendall St",
     address: "41 Kendall Street",
@@ -50,6 +55,8 @@ export const BUILDINGS: readonly BuildingProfile[] = [
   }),
   b({
     id: "ellery-house-hotel",
+    lat: -33.87,
+    lon: 151.203,
     name: "Ellery House Hotel",
     shortName: "Ellery House",
     address: "212 Sussex Street",
@@ -65,6 +72,8 @@ export const BUILDINGS: readonly BuildingProfile[] = [
   }),
   b({
     id: "marden-square",
+    lat: -33.797,
+    lon: 151.183,
     name: "Marden Square",
     shortName: "Marden Sq",
     address: "9 Orchard Road",
@@ -81,6 +90,8 @@ export const BUILDINGS: readonly BuildingProfile[] = [
   }),
   b({
     id: "lorne-road-medical",
+    lat: -32.927,
+    lon: 151.776,
     name: "Lorne Road Medical Centre",
     shortName: "Lorne Road",
     address: "27 Lorne Road",
@@ -97,6 +108,8 @@ export const BUILDINGS: readonly BuildingProfile[] = [
   }),
   b({
     id: "rosewood-gardens",
+    lat: -34.425,
+    lon: 150.893,
     name: "Rosewood Gardens Aged Care",
     shortName: "Rosewood Gardens",
     address: "3 Banksia Avenue",
@@ -112,6 +125,8 @@ export const BUILDINGS: readonly BuildingProfile[] = [
   }),
   b({
     id: "140-wexford-street",
+    lat: -37.814,
+    lon: 144.963,
     name: "140 Wexford Street",
     shortName: "140 Wexford St",
     address: "140 Wexford Street",
@@ -128,6 +143,8 @@ export const BUILDINGS: readonly BuildingProfile[] = [
   }),
   b({
     id: "parkside-secondary",
+    lat: -37.815,
+    lon: 145.229,
     name: "Parkside Secondary College",
     shortName: "Parkside College",
     address: "55 Bellbird Drive",
@@ -144,6 +161,8 @@ export const BUILDINGS: readonly BuildingProfile[] = [
   }),
   b({
     id: "the-foundry",
+    lat: -37.823,
+    lon: 144.998,
     name: "The Foundry Apartments",
     shortName: "The Foundry",
     address: "18 Kerr Lane",
@@ -159,6 +178,8 @@ export const BUILDINGS: readonly BuildingProfile[] = [
   }),
   b({
     id: "wattle-grove",
+    lat: -27.967,
+    lon: 153.4,
     name: "Wattle Grove Aged Care",
     shortName: "Wattle Grove",
     address: "120 Marlin Parade",
@@ -174,6 +195,8 @@ export const BUILDINGS: readonly BuildingProfile[] = [
   }),
   b({
     id: "riverbend-plaza",
+    lat: -27.499,
+    lon: 152.973,
     name: "Riverbend Plaza",
     shortName: "Riverbend",
     address: "7 Moggill Road",
@@ -190,6 +213,8 @@ export const BUILDINGS: readonly BuildingProfile[] = [
   }),
   b({
     id: "quay-street-offices",
+    lat: -27.47,
+    lon: 153.026,
     name: "Quay Street Offices",
     shortName: "Quay St",
     address: "88 Quay Street",
@@ -206,6 +231,8 @@ export const BUILDINGS: readonly BuildingProfile[] = [
   }),
   b({
     id: "palmcrest-apartments",
+    lat: -28.002,
+    lon: 153.43,
     name: "Palmcrest Apartments",
     shortName: "Palmcrest",
     address: "2 Northcliffe Terrace",
@@ -221,6 +248,8 @@ export const BUILDINGS: readonly BuildingProfile[] = [
   }),
   b({
     id: "hay-street-exchange",
+    lat: -31.953,
+    lon: 115.857,
     name: "Hay Street Exchange",
     shortName: "Hay St",
     address: "301 Hay Street",
@@ -237,6 +266,8 @@ export const BUILDINGS: readonly BuildingProfile[] = [
   }),
   b({
     id: "glenelg-health-hub",
+    lat: -34.98,
+    lon: 138.515,
     name: "Glenelg Health Hub",
     shortName: "Glenelg",
     address: "14 Jetty Road",
@@ -253,6 +284,8 @@ export const BUILDINGS: readonly BuildingProfile[] = [
   }),
   b({
     id: "norwood-parade-centre",
+    lat: -34.921,
+    lon: 138.632,
     name: "Norwood Parade Centre",
     shortName: "Norwood",
     address: "160 The Parade",
@@ -269,6 +302,8 @@ export const BUILDINGS: readonly BuildingProfile[] = [
   }),
   b({
     id: "wapping-lane",
+    lat: -42.882,
+    lon: 147.331,
     name: "Wapping Lane Apartments",
     shortName: "Wapping Lane",
     address: "11 Wapping Lane",

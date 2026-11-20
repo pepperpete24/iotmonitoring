@@ -170,6 +170,8 @@ export function portfolioStatus(engine: Engine, now: UtcMs): PortfolioStatus {
       state: b.state,
       zone: b.zone,
       type: b.type,
+      lat: b.lat,
+      lon: b.lon,
       status: r.status,
       annunciator: r.annunciator,
       openIncidents: r.openIncidents,

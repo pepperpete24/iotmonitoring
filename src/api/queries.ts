@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Command } from "@/mock/engine/engine";
 import { transport } from "./transport";
-import type { IncidentDetail, IncidentSummary, LogbookView, PortfolioStatus } from "./types";
+import type { BuildingDetail, IncidentDetail, IncidentSummary, LogbookView, PortfolioStatus, SeriesView } from "./types";
 
 export const queryKeys = {
   portfolioStatus: ["portfolio", "status"] as const,
@@ -41,6 +41,31 @@ export function useLogbook(filters: Record<string, string> = {}) {
   return useQuery({
     queryKey: queryKeys.logbook(filters),
     queryFn: () => transport.get<LogbookView[]>(`/api/logbook?${q.toString()}`),
+  });
+}
+
+export function useBuilding(id: string | undefined) {
+  return useQuery({
+    queryKey: ["buildings", id ?? ""],
+    queryFn: () => transport.get<BuildingDetail>(`/api/buildings/${encodeURIComponent(id!)}`),
+    enabled: !!id,
+  });
+}
+
+/** Readings for one channel. `to` omitted means "up to now", refreshed live. */
+export function useSeries(channelId: string | undefined, range: { from?: number; to?: number; spanMs?: number }, points = 400) {
+  const key = range.from !== undefined ? `${range.from}-${range.to ?? "now"}` : `last-${range.spanMs ?? 86_400_000}`;
+  return useQuery({
+    queryKey: ["series", channelId ?? "", key, points],
+    queryFn: () => {
+      const q = new URLSearchParams({ channel: channelId!, points: String(points) });
+      if (range.from !== undefined) q.set("from", String(range.from));
+      else q.set("span", String(range.spanMs ?? 86_400_000));
+      if (range.to !== undefined) q.set("to", String(range.to));
+      return transport.get<SeriesView>(`/api/series?${q.toString()}`);
+    },
+    enabled: !!channelId,
+    placeholderData: (prev) => prev,
   });
 }
 

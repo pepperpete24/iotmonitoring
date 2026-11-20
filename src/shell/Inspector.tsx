@@ -15,6 +15,7 @@ import { formatDateTime, formatDuration, formatNumber, formatTimeZoned } from "@
 import { buildingById } from "@/mock/world/buildings";
 import { useSimNow } from "@/state/clock";
 import { type InspectTarget, useInspect } from "./url";
+import { DeviceInspector } from "./DeviceInspector";
 import styles from "./Inspector.module.css";
 
 export function Inspector() {
@@ -71,6 +72,8 @@ function InspectorContent({ target }: { target: InspectTarget }) {
       return <BuildingSummaryView id={target.id} />;
     case "symbol":
       return <SymbolView kind={target.id as SymbolKind} />;
+    case "device":
+      return <DeviceInspector id={target.id} />;
     default:
       return <NotFound what={`${target.type} ${target.id}`} />;
   }
