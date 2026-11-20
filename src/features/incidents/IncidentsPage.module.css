@@ -1,0 +1,56 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 24px 32px 64px;
+  min-width: 0;
+}
+
+.filters {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.field select,
+.field input {
+  height: 32px;
+  padding: 0 8px;
+  border: 1px solid var(--ink-soft);
+  border-radius: var(--r-control);
+  background: var(--paper);
+  font-size: var(--fs-13);
+}
+
+.field input {
+  width: 280px;
+  max-width: 100%;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.count {
+  font-family: var(--font-num);
+  font-weight: 400;
+  color: var(--ink-soft);
+}
+
+.retry {
+  align-self: flex-start;
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--ink-soft);
+  border-radius: var(--r-control);
+  background: var(--paper);
+}
+
+@media (max-width: 767px) {
+  .page {
+    padding: 16px 16px 64px;
+  }
+}

@@ -1,11 +1,13 @@
 import { useEffect } from "react";
-import { createBrowserRouter, Navigate, RouterProvider, useParams } from "react-router-dom";
+import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AppShell } from "@/shell/AppShell";
 import { Pending } from "@/features/Pending";
 import { SymbolsPage } from "@/dev/SymbolsPage";
 import { BuildingPage } from "@/features/building/BuildingPage";
 import { PortfolioPage } from "@/features/portfolio/PortfolioPage";
+import { IncidentsPage } from "@/features/incidents/IncidentsPage";
+import { IncidentDetailPage } from "@/features/incidents/IncidentDetailPage";
 import { TokensPage } from "@/dev/TokensPage";
 import { applyDocumentPrefs, useUi } from "@/state/ui";
 import { startRuntime } from "@/mock/runtime";
@@ -17,17 +19,6 @@ const queryClient = new QueryClient({
   defaultOptions: { queries: { refetchOnWindowFocus: false, retry: 1 } },
 });
 
-function IncidentPending() {
-  const { id } = useParams();
-  return (
-    <Pending
-      title={`Incident ${id ?? ""}`}
-      job="Severity, location, evidence chart, water lost and cost, escalation timeline with delivery results, and every action."
-      milestone="M4"
-    />
-  );
-}
-
 const router = createBrowserRouter([
   {
     element: <AppShell />,
@@ -35,13 +26,8 @@ const router = createBrowserRouter([
       { index: true, element: <Navigate to="/portfolio" replace /> },
       { path: "portfolio", element: <PortfolioPage /> },
       { path: "buildings/:id", element: <BuildingPage /> },
-      {
-        path: "incidents",
-        element: (
-          <Pending title="Incidents" job="Open, acknowledged and resolved incidents from the last 90 days." milestone="M4" />
-        ),
-      },
-      { path: "incidents/:id", element: <IncidentPending /> },
+      { path: "incidents", element: <IncidentsPage /> },
+      { path: "incidents/:id", element: <IncidentDetailPage /> },
       {
         path: "logbook",
         element: <Pending title="Logbook" job="Everything that happened and who did it, append-only." milestone="M6" />,

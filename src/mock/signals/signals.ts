@@ -184,29 +184,31 @@ function pressure(c: Ctx, t: UtcMs, store: EffectStore): number {
   return Math.max(0, Math.round(p + noise));
 }
 
-function tankLevel(c: Ctx, t: UtcMs, store: EffectStore): number {
+/** Tank level before any effect: roof sawtooth, steady fire tank, or the rainwater path. */
+function tankBase(c: Ctx, t: UtcMs, effects: readonly Effect[]): number {
   const loc = c.device.location.toLowerCase();
+  if (loc.includes("fire")) return 97.6 + 0.8 * Math.sin(t / (36 * 3600_000) + (c.seed % 10));
+  if (loc.includes("rainwater")) return rainwaterLevel(c, t, effects);
+  // Roof tank: slow sawtooth, fills in about 20 minutes, draws over a few hours.
+  const period = (170 + (c.seed % 60)) * MIN;
+  const fill = 20 * MIN;
+  const phase = (t + (c.seed % 1000) * MIN) % period;
+  const lo = 56 + (c.seed % 5);
+  const hi = 93 - (c.seed % 4);
+  return phase < fill ? lo + ((hi - lo) * phase) / fill : hi - ((hi - lo) * (phase - fill)) / (period - fill);
+}
+
+function tankLevel(c: Ctx, t: UtcMs, store: EffectStore): number {
   const effects = store.forDevice(c.device.id);
-  let v: number;
-  if (loc.includes("fire")) {
-    v = 97.6 + 0.8 * Math.sin(t / (36 * 3600_000) + (c.seed % 10));
-  } else if (loc.includes("rainwater")) {
-    v = rainwaterLevel(c, t, effects);
-  } else {
-    // Roof tank: slow sawtooth, fills in about 20 minutes, draws over a few hours.
-    const period = (170 + (c.seed % 60)) * MIN;
-    const fill = 20 * MIN;
-    const phase = (t + (c.seed % 1000) * MIN) % period;
-    const lo = 56 + (c.seed % 5);
-    const hi = 93 - (c.seed % 4);
-    v = phase < fill ? lo + ((hi - lo) * phase) / fill : hi - ((hi - lo) * (phase - fill)) / (period - fill);
-  }
+  let v = tankBase(c, t, effects);
   for (const e of effects) {
     if (e.kind === "tank-fill" && t >= e.from) {
-      // Drives the level towards `target` (up or down) at `ratePerMin`, then lets it recover.
+      // From the level when the fault began, move towards `target` (up or down),
+      // then recover to normal over about 90 minutes once it ends.
+      const v0 = tankBase(c, e.from, effects);
       const end = e.to ?? t;
       const mins = (Math.min(t, end) - e.from) / MIN;
-      const moved = e.ratePerMin >= 0 ? Math.min(e.target, v + e.ratePerMin * mins) : Math.max(e.target, v + e.ratePerMin * mins);
+      const moved = e.ratePerMin >= 0 ? Math.min(e.target, v0 + e.ratePerMin * mins) : Math.max(e.target, v0 + e.ratePerMin * mins);
       v = t < end ? moved : v + (moved - v) * Math.exp(-(t - end) / (90 * MIN));
     }
   }

@@ -356,7 +356,7 @@ export class Engine {
   private pushNotifications(ns: Notification[], lead: string, inc: Incident, at = this.now) {
     if (!ns.length) return;
     this.world.notifications.push(...ns);
-    const words = ns.map((n) => `${n.channel === "sms" ? "SMS" : n.channel === "push" ? "Push" : "Email"}: ${n.detail.toLowerCase()}`).join(". ");
+    const words = ns.map((n) => `${n.channel === "sms" ? "SMS" : n.channel === "push" ? "Push" : "Email"}: ${lowerFirst(n.detail)}`).join(". ");
     this.log("system", "notification", { buildingId: inc.buildingId, incidentId: inc.id, target: inc.id, detail: `${lead} ${words}.`, at });
     this.emit("notifications");
   }
@@ -550,7 +550,7 @@ export class Engine {
       case "test-message": {
         const n = testMessage(cmd.personId, this.now, this.world.contacts);
         this.world.notifications.push(n);
-        this.log(cmd.by, "test-message", { buildingId: null, target: personName(cmd.personId), detail: `Test SMS to ${personName(cmd.personId)}: ${n.detail.toLowerCase()}.` });
+        this.log(cmd.by, "test-message", { buildingId: null, target: personName(cmd.personId), detail: `Test SMS to ${personName(cmd.personId)}: ${lowerFirst(n.detail)}.` });
         this.emit("notifications");
         break;
       }
@@ -753,3 +753,9 @@ export function isolationOf(buildingId: string): { sentence: string; levels: str
 }
 
 export type { Effect };
+
+
+/** "Held: Helen's quiet hours" becomes "held: Helen's quiet hours". */
+function lowerFirst(s: string): string {
+  return s.charAt(0).toLowerCase() + s.slice(1);
+}

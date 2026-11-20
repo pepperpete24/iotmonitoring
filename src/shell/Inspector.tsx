@@ -16,6 +16,7 @@ import { buildingById } from "@/mock/world/buildings";
 import { useSimNow } from "@/state/clock";
 import { type InspectTarget, useInspect } from "./url";
 import { DeviceInspector } from "./DeviceInspector";
+import { incidentHeadline } from "@/lib/headline";
 import styles from "./Inspector.module.css";
 
 export function Inspector() {
@@ -96,9 +97,7 @@ function IncidentSummary({ id }: { id: string }) {
   const b = buildingById.get(i.buildingId)!;
   return (
     <>
-      <h2 className="t-section">
-        {i.title}, {i.location}
-      </h2>
+      <h2 className="t-section">{incidentHeadline(i.title, i.location)}</h2>
       <p>{b.name}</p>
       <dl className={styles.facts}>
         <dt>Severity</dt>

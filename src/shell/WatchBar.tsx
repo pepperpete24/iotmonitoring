@@ -11,6 +11,7 @@ import { useSimNow } from "@/state/clock";
 import { buildingById } from "@/mock/world/buildings";
 import { countWord, formatDuration, formatTimeZoned, plural } from "@/lib/format";
 import { useInspect } from "./url";
+import { incidentHeadline } from "@/lib/headline";
 import styles from "./WatchBar.module.css";
 
 function ackText(i: OpenIncidentSummary): string {
@@ -59,9 +60,7 @@ export function WatchBar() {
         >
           <StatusGlyph status={i.severity} size={12} />
           <span className={styles.building}>{b?.name}</span>
-          <span>
-            {i.title}, {i.location}
-          </span>
+          <span>{incidentHeadline(i.title, i.location)}</span>
           <span className={styles.elapsed}>
             {i.severity === "critical" ? "Critical" : "Warning"} for {elapsed}
           </span>

@@ -166,7 +166,9 @@ export function buildWorld(): World {
       const rule = ruleById.get(a.rule)!;
       const deviceId = d.dev(a.device);
       const ch = channelFor(deviceId, RULE_MEASURE[a.rule] ?? null);
-      const value = ch ? (sample(ch, raisedAt, effects) ?? 0) : rule.threshold;
+      // A burst alert records the excess flow it measured, not the raw meter reading.
+      const value =
+        rule.template === "burst" && spec.water ? spec.water.rateLpm : ch ? (sample(ch, raisedAt, effects) ?? 0) : rule.threshold;
       const alertId = `A-${String(++alertSeq).padStart(5, "0")}`;
       alertIds.push(alertId);
       const unit = ch ? MEASURE_UNIT[ch.measure] : undefined;
@@ -183,7 +185,7 @@ export function buildWorld(): World {
         summary: a.summary,
         clearedAt: resolvedAt,
       });
-      const reading = unit ? ` Reading ${formatValue(value, unit)}.` : "";
+      const reading = unit ? ` ${rule.template === "burst" ? "Excess flow" : "Reading"} ${formatValue(value, unit)}.` : "";
       L(raisedAt, "system", "alert-raised", `${a.summary}.${reading} ${deviceById(deviceId)?.location ?? ""}.`, {
         deviceId,
         target: a.device,
@@ -200,7 +202,7 @@ export function buildWorld(): World {
     if (spec.severity === "warning") {
       const sent = warningNotice({ incidentId: id, buildingId: b.id, policy: warningPolicy(b.id), at: openedAt, summary: spec.alerts[0]!.summary, contacts });
       notifications.push(...sent);
-      L(openedAt, "system", "notification", `Warning sent to ${personName(sent[0]!.personId)}. ${sent.map((n) => `${channelWord(n.channel)}: ${n.detail.toLowerCase()}`).join(". ")}.`);
+      L(openedAt, "system", "notification", `Warning sent to ${personName(sent[0]!.personId)}. ${sent.map((n) => `${channelWord(n.channel)}: ${lowerFirst(n.detail)}`).join(". ")}.`);
     }
     if (criticalAt !== null && criticalAt <= DEMO_START) {
       const until = Math.min(DEMO_START, ackAt ?? Infinity, resolvedAt ?? Infinity);
@@ -217,7 +219,7 @@ export function buildWorld(): World {
       });
       notifications.push(...run.notifications);
       for (const s of run.steps) {
-        L(s.at, "system", "notification", `Escalation step ${s.stepSeq}, ${personName(s.personId)}. ${s.notifications.map((n) => `${channelWord(n.channel)}: ${n.detail.toLowerCase()}`).join(". ")}.`);
+        L(s.at, "system", "notification", `Escalation step ${s.stepSeq}, ${personName(s.personId)}. ${s.notifications.map((n) => `${channelWord(n.channel)}: ${lowerFirst(n.detail)}`).join(". ")}.`);
       }
     }
 
@@ -333,3 +335,9 @@ function channelWord(c: Notification["channel"]): string {
 
 /** Levels of a building, for tests and selectors. */
 export const levelsOf = (buildingId: string) => topologyOf(buildingId).levels;
+
+
+/** "Held: Helen's quiet hours" becomes "held: Helen's quiet hours". */
+function lowerFirst(s: string): string {
+  return s.charAt(0).toLowerCase() + s.slice(1);
+}

@@ -12,6 +12,7 @@ import { Value } from "@/components/Value";
 import { DAY, formatAgo, formatDateTime, formatDuration, formatNumber, formatTimeZoned, type Unit } from "@/lib/format";
 import { useInspect } from "@/shell/url";
 import { useSimNow } from "@/state/clock";
+import { incidentHeadline } from "@/lib/headline";
 import styles from "./tabs.module.css";
 
 // ---- Overview: live values by system ---------------------------------------------
@@ -190,6 +191,8 @@ export function DevicesTab({ b }: { b: BuildingDetail }) {
 
 // ---- Incidents ------------------------------------------------------------------------
 
+const WATER_CATEGORIES = new Set(["leak-minor", "leak-false-alarm", "overnight-flow", "burst", "tank"]);
+
 export function incidentColumns(now: number, zoneOf: (i: IncidentSummary) => string, showBuilding = false): Column<IncidentSummary>[] {
   const stateWord = (i: IncidentSummary) =>
     i.state === "resolved" ? (i.resolution === "false-alarm" ? "False alarm" : "Resolved") : i.state === "open" ? "Not acknowledged" : i.state === "dispatched" ? "Dispatched" : "Acknowledged";
@@ -197,7 +200,7 @@ export function incidentColumns(now: number, zoneOf: (i: IncidentSummary) => str
     { key: "sev", header: <span className="visually-hidden">Severity</span>, width: 28, render: (i) => <StatusGlyph status={i.peakSeverity} title={i.peakSeverity === "critical" ? "Critical" : "Warning"} /> },
     { key: "id", header: "Incident", width: 104, render: (i) => <Link to={`/incidents/${i.id}`} onClick={(e) => e.stopPropagation()}>{i.id}</Link>, sortValue: (i) => i.id },
     ...(showBuilding ? [{ key: "b", header: "Building", render: (i: IncidentSummary) => i.buildingName, sortValue: (i: IncidentSummary) => i.buildingName }] : []),
-    { key: "what", header: "What and where", render: (i) => `${i.title}, ${i.location}` },
+    { key: "what", header: "What and where", render: (i) => incidentHeadline(i.title, i.location) },
     { key: "state", header: "State", render: stateWord, sortValue: (i) => i.state },
     { key: "opened", header: "Opened", align: "num", render: (i) => formatDateTime(i.openedAt, zoneOf(i), { year: false }), sortValue: (i) => i.openedAt },
     {
@@ -207,7 +210,12 @@ export function incidentColumns(now: number, zoneOf: (i: IncidentSummary) => str
       render: (i) => formatDuration((i.resolvedAt ?? now) - i.openedAt),
       sortValue: (i) => (i.resolvedAt ?? now) - i.openedAt,
     },
-    { key: "water", header: "Water lost", align: "num", render: (i) => (i.waterLostL === null ? <span className="soft">Not metered</span> : <Value value={i.waterLostL / 1000} unit="kL" flash={false} />), sortValue: (i) => i.waterLostL ?? -1 },
+    { key: "water", header: "Water lost", align: "num", render: (i) =>
+        i.waterLostL !== null ? (
+          <Value value={i.waterLostL / 1000} unit="kL" flash={false} />
+        ) : WATER_CATEGORIES.has(i.category) ? (
+          <span className="soft">Not metered</span>
+        ) : null, sortValue: (i) => i.waterLostL ?? -1 },
   ];
 }
 

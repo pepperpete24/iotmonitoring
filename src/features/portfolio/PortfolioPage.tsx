@@ -15,6 +15,7 @@ import { usePhone } from "@/lib/useMedia";
 import { AustraliaMap } from "./AustraliaMap";
 import { briefingSegments, waterSentence } from "./briefing";
 import { MiniRiser } from "./MiniRiser";
+import { incidentHeadline } from "@/lib/headline";
 import styles from "./PortfolioPage.module.css";
 
 type View = "attention" | "all" | "state" | "type";
@@ -240,9 +241,7 @@ function Expanded({ b }: { b: BuildingSummary }) {
         {top ? (
           <>
             <p>
-              <strong>
-                {top.title}, {top.location}.
-              </strong>{" "}
+              <strong>{incidentHeadline(top.title, top.location)}.</strong>{" "}
               {top.severity === "critical" ? "Critical" : "Warning"} for {formatDuration(now - top.severitySince)},{" "}
               {top.state === "open" ? "not acknowledged" : `acknowledged by ${top.acknowledgedBy}`}.
               {top.waterLostL !== null && ` ${formatNumber(top.waterLostL / 1000, 2)} kL lost so far.`}
