@@ -64,7 +64,7 @@ const router = createBrowserRouter([
   { path: "/m/respond/:incidentId", element: <Suspense fallback={<PhoneLoading />}><RespondPage /></Suspense> },
   { path: "/r/:short", element: <ShortLink /> },
   { path: "/m/commission", element: <Suspense fallback={<PhoneLoading />}><CommissionPage /></Suspense> },
-]);
+], { basename: import.meta.env.BASE_URL.replace(/\/$/, "") || "/" });
 
 /** The short link in an SMS: /r/0167 opens the responder view for I-2026-0167. */
 function ShortLink() {

@@ -26,6 +26,11 @@ npx vite preview     # serve dist/
 
 Playwright needs Chromium once: `npx playwright install chromium`.
 
+## Live demo
+
+Every push to `main` is built and published to GitHub Pages by
+`.github/workflows/pages.yml`: https://pepperpete24.github.io/iotmonitoring/
+
 ## The demo tray
 
 Press Shift+D, or use the button at the bottom right.
