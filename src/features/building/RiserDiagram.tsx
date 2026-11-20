@@ -66,12 +66,21 @@ export function itemStatus(d: DeviceLive) {
   return null;
 }
 
-export function accessibleName(d: DeviceLive, layer: Layer): string {
+/** What a screen reader hears after the visible name: kind, place, hidden value, status. */
+export function accessibleDescription(d: DeviceLive, layer: Layer, compact = d.kind === "leak-sensor" || d.kind === "door-contact"): string {
   const v = displayValue(d, layer);
   const st = itemStatus(d);
-  return [`${d.tag}, ${d.kindLabel.toLowerCase()}`, d.location, v ? `${v.text} ${v.unit}`.trim() : null, st ? (st === "muted" ? "muted" : st) : null]
-    .filter(Boolean)
-    .join(", ");
+  const value = v ? `${v.text} ${v.unit}`.trim() : null;
+  return [d.kindLabel.toLowerCase(), d.location, compact ? value : null, st ? (st === "muted" ? "muted" : st) : null].filter(Boolean).join(", ");
+}
+
+export function accessibleName(d: DeviceLive, layer: Layer, compact = d.kind === "leak-sensor" || d.kind === "door-contact"): string {
+  const v = displayValue(d, layer);
+  const st = itemStatus(d);
+  const value = v ? `${v.text} ${v.unit}`.trim() : null;
+  // what is visible comes first, in the order it is shown, so voice control can find it
+  const head = compact || !value ? d.tag : `${d.tag} ${value}`;
+  return [head, d.kindLabel.toLowerCase(), d.location, compact ? value : null, st ? (st === "muted" ? "muted" : st) : null].filter(Boolean).join(", ");
 }
 
 export function RiserDiagram({ building, layer, now, selectedId, onSelect }: Props) {
@@ -84,6 +93,7 @@ export function RiserDiagram({ building, layer, now, selectedId, onSelect }: Pro
   const [focusId, setFocusId] = useState<string | null>(null);
   const drag = useRef<{ x: number; y: number; px: number; py: number } | null>(null);
   const hatch = useId().replace(/:/g, "");
+  const idBase = `riser-${hatch}`;
 
   useEffect(() => {
     const el = box.current;
@@ -305,10 +315,12 @@ export function RiserDiagram({ building, layer, now, selectedId, onSelect }: Pro
             )}
 
             {/* devices */}
-            {lay.items.map((it) => (
+            {lay.items.map((it, index) => (
               <RiserItem
                 key={it.device.id}
                 it={it}
+                index={index}
+                idBase={idBase}
                 layer={layer}
                 selected={selectedId === it.device.id}
                 dimRow={hoverRow !== null && hoverRow !== it.row}
@@ -350,6 +362,13 @@ export function RiserDiagram({ building, layer, now, selectedId, onSelect }: Pro
           </g>
         </svg>
       </div>
+      <div className="visually-hidden">
+        {lay.items.map((it, index) => (
+          <span key={it.device.id} id={`${idBase}-${index}-d`}>
+            {accessibleDescription(it.device, layer, it.compact)}
+          </span>
+        ))}
+      </div>
     </div>
   );
 }
@@ -359,6 +378,8 @@ const TOP_LABEL_Y = 14;
 
 function RiserItem({
   it,
+  index,
+  idBase,
   layer,
   selected,
   dimRow,
@@ -368,6 +389,8 @@ function RiserItem({
   onFocus,
 }: {
   it: Placed;
+  index: number;
+  idBase: string;
   layer: Layer;
   selected: boolean;
   dimRow: boolean;
@@ -389,12 +412,16 @@ function RiserItem({
   };
   const spec = symbolByKind.get(it.symbol as SymbolKind)!;
   const top = it.y - 12;
+  const uid = `${idBase}-${index}`;
+  // the name is the visible text, in order; the rest is the description
+  const labelledBy = it.compact ? `${uid}-t` : v ? `${uid}-t ${uid}-v` : `${uid}-t`;
   return (
     <g
       data-device={d.id}
       role="button"
       tabIndex={tabbable ? 0 : -1}
-      aria-label={accessibleName(d, layer)}
+      aria-labelledby={labelledBy}
+      aria-describedby={`${uid}-d`}
       aria-pressed={selected}
       className={`${styles.item} ${inLayer ? "" : styles.dim} ${dimRow ? styles.rowDim : ""}`}
       onClick={onSelect}
@@ -413,19 +440,21 @@ function RiserItem({
         </g>
       )}
       {it.compact ? (
-        <text x={it.x + 12} y={top + 36} textAnchor="middle" className={styles.compactTag}>
+        <text id={`${uid}-t`} x={it.x + 12} y={top + 36} textAnchor="middle" className={styles.compactTag}>
           {d.tag}
         </text>
       ) : (
         <>
           <g transform={`translate(${it.x + 30},${top - 2})`}>
             <rect width={d.tag.length * 6.6 + 10} height={15} rx={2} className={styles.tag} />
-            <text x={5} y={11} className={styles.tagText}>
+            <text id={`${uid}-t`} x={5} y={11} className={styles.tagText}>
               {d.tag}
             </text>
           </g>
           {v && (
-            <text x={it.x + 30} y={top + 28} className={styles.value}>
+            <text id={`${uid}-v`} x={it.x + 30} y={top + 28} className={styles.value}>
+              {/* the leading space keeps "FT-01 87.9" apart when assistive tech joins the texts; SVG collapses it on screen */}
+              {" "}
               {v.text}
               {v.unit && <tspan className={styles.unit}> {v.unit}</tspan>}
             </text>

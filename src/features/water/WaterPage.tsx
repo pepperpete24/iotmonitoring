@@ -89,14 +89,14 @@ export function WaterPage() {
             half-hour averages in that window.
           </p>
           {!buildingId && <p className="t-small">Showing {w.nights.name}. Choose a building above to see its own baseline.</p>}
-          <NightsChart nights={w.nights} zone={zone} />
+          <NightsChart nights={w.nights} zone={zone} margin={w.breachMarginLpm} />
         </section>
 
         <section className={styles.section}>
           <h2 className="t-section">Anomalies, last 30 nights</h2>
           {w.anomalies.length ? (
             <table className={styles.table}>
-              <caption className="visually-hidden">Nights with flow 3 L/min or more above the building's usual</caption>
+              <caption className="visually-hidden">Nights with flow {w.breachMarginLpm} L/min or more above the building's usual</caption>
               <thead>
                 <tr>
                   <th scope="col">Night</th>
@@ -131,7 +131,7 @@ export function WaterPage() {
               </tbody>
             </table>
           ) : (
-            <p className="soft">No night in the last 30 ran 3 L/min or more above its usual. Anomalies appear here the morning after.</p>
+            <p className="soft">No night in the last 30 ran {w.breachMarginLpm} L/min or more above its usual. Anomalies appear here the morning after.</p>
           )}
         </section>
 

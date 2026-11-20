@@ -92,3 +92,8 @@
     height: auto;
   }
 }
+
+.loading {
+  padding: 24px 32px;
+  color: var(--ink-soft);
+}

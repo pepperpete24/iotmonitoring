@@ -3,7 +3,7 @@ import type { BuildingDetail } from "@/api/types";
 import { SchematicSymbol } from "@/components/symbols/symbols";
 import { StatusGlyph } from "@/components/status/StatusGlyph";
 import { Tag } from "@/components/Tag";
-import { accessibleName, displayValue, itemStatus } from "./RiserDiagram";
+import { displayValue, itemStatus } from "./RiserDiagram";
 import type { Layer } from "./riserLayout";
 import { symbolFor } from "./riserLayout";
 import styles from "./RiserList.module.css";
@@ -24,13 +24,17 @@ export function RiserList({ building, layer, selectedId, onSelect }: { building:
                 const r = d.readings[0];
                 return (
                   <li key={d.id}>
-                    <button type="button" className={styles.item} aria-pressed={selectedId === d.id} aria-label={accessibleName(d, layer)} onClick={() => onSelect(d.id)}>
+                    <button type="button" className={styles.item} aria-pressed={selectedId === d.id} onClick={() => onSelect(d.id)}>
                       <SchematicSymbol kind={symbolFor(d)} size={24} wet={d.kind === "leak-sensor" && r?.value === 1} closed={d.kind === "valve-controller" && r?.value === 1} level={d.kind === "tank-level" && r ? r.value / 100 : 0.6} />
                       <Tag>{d.tag}</Tag>
                       <span className={styles.where}>{d.location}</span>
                       <span className={styles.value}>
                         {st && <StatusGlyph status={st} size={12} />}
                         {v ? `${v.text}${v.unit ? ` ${v.unit}` : ""}` : ""}
+                      </span>
+                      <span className="visually-hidden">
+                        , {d.kindLabel.toLowerCase()}
+                        {st ? `, ${st}` : ""}
                       </span>
                     </button>
                   </li>

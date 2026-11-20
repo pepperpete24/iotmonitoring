@@ -199,9 +199,10 @@
   .page {
     padding: 16px 16px 64px;
   }
-  .escTable {
-    display: block;
-    overflow-x: auto;
+  .escTable th,
+  .escTable td {
+    white-space: normal;
+    padding-right: 6px;
   }
   .log li {
     grid-template-columns: 76px 1fr;

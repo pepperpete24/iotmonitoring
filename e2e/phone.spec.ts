@@ -15,6 +15,7 @@ test("Tom opens the SMS link and acknowledges in a couple of taps", async ({ pag
 
 test("the demo tray shows the SMS that brought Tom here", async ({ page }) => {
   await page.goto("/m/respond/I-2026-0167");
+  await expect(page.getByRole("heading", { name: "Kendall Street Tower" })).toBeVisible();
   await page.keyboard.press("Shift+D");
   const tray = page.getByRole("region", { name: "Demo tray" });
   await expect(tray.getByText(/Critical, Kendall Street Tower: .*I-2026-0167. Acknowledge: tidemark.example\/r\/0167/)).toBeVisible();
@@ -41,5 +42,5 @@ test("Kayla commissions a leak sensor in under two minutes and it appears in the
   await expect(page.getByRole("heading", { name: "Commissioned" })).toBeVisible();
   expect(Date.now() - started).toBeLessThan(120_000);
   await page.getByRole("link", { name: /See it in Kendall Street Tower/ }).click();
-  await expect(page.getByRole("button", { name: /WL-B2-05, leak sensor/ }).first()).toBeVisible();
+  await expect(page.getByRole("button", { name: /WL-B2-05.*leak sensor/ }).first()).toBeVisible();
 });

@@ -10,8 +10,12 @@
     "test": "vitest run",
     "typecheck": "tsc -b",
     "palette": "node scripts/check-palette.mjs",
-    "shots": "node scripts/shots.mjs",
-    "test:e2e": "playwright test"
+    "shots": "node scripts/shots.mjs --out screenshots/final --widths 1920,1440,1024,768,390",
+    "test:e2e": "playwright test",
+    "scan": "node scripts/scan-literals.mjs",
+    "axe": "node scripts/axe.mjs --json docs/axe-results.json",
+    "audit": "npm run -s palette && npm run -s scan && npm run -s axe && npm run -s overflow",
+    "overflow": "node scripts/overflow.mjs"
   },
   "dependencies": {
     "@fontsource/barlow": "^5.3.0",
@@ -32,6 +36,7 @@
     "zustand": "^5.1.0"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
     "@playwright/test": "^1.65.1",
     "@types/d3-array": "^3.2.2",
     "@types/d3-scale": "^4.0.9",

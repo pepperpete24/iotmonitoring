@@ -13,3 +13,6 @@ export function useMedia(query: string): boolean {
 }
 
 export const usePhone = () => useMedia("(max-width: 767px)");
+/** Tablet and narrow desktop: tables drop their least important columns. */
+export const useNarrow = () => useMedia("(max-width: 1180px)");
+export const useTablet = () => useMedia("(max-width: 960px)");

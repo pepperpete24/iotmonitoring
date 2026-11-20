@@ -1,26 +1,33 @@
-import { useEffect } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { createBrowserRouter, Navigate, RouterProvider, useParams } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AppShell } from "@/shell/AppShell";
 import { Pending } from "@/features/Pending";
-import { SymbolsPage } from "@/dev/SymbolsPage";
 import { BuildingPage } from "@/features/building/BuildingPage";
 import { PortfolioPage } from "@/features/portfolio/PortfolioPage";
 import { IncidentsPage } from "@/features/incidents/IncidentsPage";
-import { DevicesPage } from "@/features/devices/DevicesPage";
-import { DeviceDetailPage } from "@/features/devices/DeviceDetailPage";
-import { WaterPage } from "@/features/water/WaterPage";
-import { RespondPage } from "@/features/mobile/RespondPage";
-import { SettingsPage } from "@/features/settings/SettingsPage";
-import { CommissionPage } from "@/features/mobile/CommissionPage";
-import { LogbookPage } from "@/features/logbook/LogbookPage";
-import { MonthlyReportPage } from "@/features/reports/MonthlyReportPage";
-import { IncidentReportPage } from "@/features/reports/IncidentReportPage";
 import { IncidentDetailPage } from "@/features/incidents/IncidentDetailPage";
-import { TokensPage } from "@/dev/TokensPage";
 import { applyDocumentPrefs, useUi } from "@/state/ui";
 import { startRuntime } from "@/mock/runtime";
 import { useLiveUpdates } from "@/api/live";
+
+// Screens away from the main demo path load on first visit.
+const SymbolsPage = lazy(() => import("@/dev/SymbolsPage").then((m) => ({ default: m.SymbolsPage })));
+const DevicesPage = lazy(() => import("@/features/devices/DevicesPage").then((m) => ({ default: m.DevicesPage })));
+const DeviceDetailPage = lazy(() => import("@/features/devices/DeviceDetailPage").then((m) => ({ default: m.DeviceDetailPage })));
+const WaterPage = lazy(() => import("@/features/water/WaterPage").then((m) => ({ default: m.WaterPage })));
+const RespondPage = lazy(() => import("@/features/mobile/RespondPage").then((m) => ({ default: m.RespondPage })));
+const SettingsPage = lazy(() => import("@/features/settings/SettingsPage").then((m) => ({ default: m.SettingsPage })));
+const CommissionPage = lazy(() => import("@/features/mobile/CommissionPage").then((m) => ({ default: m.CommissionPage })));
+const LogbookPage = lazy(() => import("@/features/logbook/LogbookPage").then((m) => ({ default: m.LogbookPage })));
+const MonthlyReportPage = lazy(() => import("@/features/reports/MonthlyReportPage").then((m) => ({ default: m.MonthlyReportPage })));
+const IncidentReportPage = lazy(() => import("@/features/reports/IncidentReportPage").then((m) => ({ default: m.IncidentReportPage })));
+const TokensPage = lazy(() => import("@/dev/TokensPage").then((m) => ({ default: m.TokensPage })));
+
+/** Phone views load on their own; this is what shows for the moment they take. */
+function PhoneLoading() {
+  return <p style={{ padding: 16 }}>Opening</p>;
+}
 
 startRuntime();
 
@@ -54,9 +61,9 @@ const router = createBrowserRouter([
       },
     ],
   },
-  { path: "/m/respond/:incidentId", element: <RespondPage /> },
+  { path: "/m/respond/:incidentId", element: <Suspense fallback={<PhoneLoading />}><RespondPage /></Suspense> },
   { path: "/r/:short", element: <ShortLink /> },
-  { path: "/m/commission", element: <CommissionPage /> },
+  { path: "/m/commission", element: <Suspense fallback={<PhoneLoading />}><CommissionPage /></Suspense> },
 ]);
 
 /** The short link in an SMS: /r/0167 opens the responder view for I-2026-0167. */

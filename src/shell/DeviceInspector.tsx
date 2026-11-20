@@ -1,7 +1,8 @@
 /** The inspector's view of one device: live value, 24 h chart, thresholds, health, alerts, actions. */
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useBuilding, useCommand, useSeries } from "@/api/queries";
+import { useBuilding, useCommand, useSeries, useSettings } from "@/api/queries";
+import { ruleSentence, rulesFor, thresholdLines } from "@/lib/ruleText";
 import type { BuildingDetail, DeviceLive } from "@/api/types";
 import { Button } from "@/components/Button";
 import { TimeChart } from "@/components/charts/TimeChart";
@@ -14,33 +15,6 @@ import styles from "./Inspector.module.css";
 
 const COLOR: Record<string, string> = { flow: "var(--jade)", level: "var(--jade)", pressure: "var(--gauge)", temperature: "var(--thermal)", wet: "var(--jade)", door: "var(--ink)", valve: "var(--ink)", duty: "var(--ink)" };
 
-/** The thresholds the customer set that apply to this device. */
-function thresholdsFor(d: DeviceLive): Array<{ value: number; label: string }> {
-  const loc = d.location.toLowerCase();
-  if (d.kind === "pressure-sensor") return [{ value: 200, label: "Low pressure below 200 kPa" }];
-  if (d.kind === "tank-level") return loc.includes("fire") ? [{ value: 40, label: "Low below 40%" }] : [{ value: 40, label: "Low below 40%" }, { value: 98, label: "High above 98%" }];
-  if (d.kind === "temperature-probe" && loc.includes("cool room")) return [{ value: 5, label: "Limit 5 °C for 15 min" }];
-  if (d.kind === "temperature-probe" && loc.includes("hot water")) return [{ value: 55, label: "Below 55 °C for 30 min" }];
-  return [];
-}
-
-function ruleWords(d: DeviceLive): string[] {
-  switch (d.kind) {
-    case "leak-sensor":
-      return ["Critical when wet for 1 min"];
-    case "flow-meter":
-      return d.tag === "FT-01" ? ["Warning when overnight flow is 3 L/min above baseline for 30 min (00:00 to 05:00)", "Critical when 20 L/min above expected for 2 min"] : ["Critical when 20 L/min above expected for 2 min"];
-    case "pump-monitor":
-      return ["Warning when duty is above 15% for 45 min overnight"];
-    case "door-contact":
-      return ["Warning when open for 10 min"];
-    case "gateway":
-      return ["Warning when not heard for 15 min"];
-    default:
-      return thresholdsFor(d).map((t) => t.label);
-  }
-}
-
 export function DeviceInspector({ id }: { id: string }) {
   const buildingId = id.split("/")[0];
   const { data: b, isPending } = useBuilding(buildingId);
@@ -49,6 +23,7 @@ export function DeviceInspector({ id }: { id: string }) {
   const main = d?.readings.find((r) => r.measure !== "current") ?? d?.readings[0];
   const channelId = d && main ? `${d.id}/${main.measure}` : undefined;
   const s = useSeries(channelId, { spanMs: DAY }, 240);
+  const rules = useSettings().data?.rules ?? [];
   if (isPending) return <p className={styles.note}>Loading the device</p>;
   if (!b || !d) return <p className={styles.note}>No device {id.split("/")[1]}. It may have been replaced; check the building's device list.</p>;
   const zone = b.summary.zone;
@@ -89,7 +64,7 @@ export function DeviceInspector({ id }: { id: string }) {
               states: main.measure === "wet" ? ["Dry", "Wet"] : main.measure === "door" ? ["Closed", "Open"] : ["Open", "Closed"],
               points: s.data.points,
               gaps: s.data.gaps,
-              thresholds: thresholdsFor(d),
+              thresholds: thresholdLines(main.measure, d, rules),
               decimals: main.measure === "pressure" || main.measure === "level" ? 0 : 1,
             },
           ]}
@@ -102,9 +77,9 @@ export function DeviceInspector({ id }: { id: string }) {
       )}
       <section className={styles.section}>
         <h3 className={styles.sectionTitle}>Thresholds</h3>
-        {ruleWords(d).length ? (
+        {rulesFor(d, rules).length ? (
           <ul className={styles.bullets}>
-            {ruleWords(d).map((w) => (
+            {rulesFor(d, rules).map(ruleSentence).map((w) => (
               <li key={w}>{w}</li>
             ))}
           </ul>

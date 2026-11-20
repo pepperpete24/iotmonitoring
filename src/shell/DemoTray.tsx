@@ -7,7 +7,7 @@ import { X } from "lucide-react";
 import { Button, Segmented } from "@/components/Button";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { useCommand, useSms } from "@/api/queries";
+import { useCommand, usePortfolioStatus, useSms } from "@/api/queries";
 import type { Role } from "@/domain/common";
 import { formatTimeZoned } from "@/lib/format";
 import { resetDemo } from "@/mock/runtime";
@@ -37,12 +37,15 @@ export function DemoTray() {
   const navigate = useNavigate();
   const smsFor = role === "marcus" ? "marcus" : "tom";
   const sms = useSms(open ? smsFor : null);
+  const portfolio = usePortfolioStatus();
   const latest = sms.data?.[0];
   const switchRole = (r: Role) => {
     setRole(r);
     if (r === "helen") navigate("/portfolio");
     if (r === "marcus") navigate("/buildings/kendall-street-tower");
-    if (r === "tom") navigate(`/m/respond/${latest?.incidentId && latest.incidentId !== "TEST" ? latest.incidentId : "I-2026-0167"}`);
+    const fromSms = latest?.incidentId && latest.incidentId !== "TEST" ? latest.incidentId : null;
+    const target = fromSms ?? portfolio.data?.briefing.critical[0]?.incidentId ?? null;
+    if (r === "tom") navigate(target ? `/m/respond/${target}` : "/m/commission");
     if (r === "kayla") navigate("/m/commission");
   };
   const trigger = (scenario: "burst" | "door" | "gateway" | "leak-false-alarm") => command.mutate({ type: "trigger", scenario, by: "helen" });

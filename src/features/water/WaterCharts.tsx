@@ -24,7 +24,7 @@ function useWidth() {
   return [ref, w] as const;
 }
 
-export function NightsChart({ nights, zone }: { nights: WaterView["nights"]; zone: string }) {
+export function NightsChart({ nights, zone, margin }: { nights: WaterView["nights"]; zone: string; margin: number }) {
   const [ref, width] = useWidth();
   const [view, setView] = useState<"chart" | "table">("chart");
   const [hover, setHover] = useState<number | null>(null);
@@ -60,7 +60,7 @@ export function NightsChart({ nights, zone }: { nights: WaterView["nights"]; zon
           <span className={local.bandKey} aria-hidden /> Normal range, 10th to 90th percentile of the 28 nights before
         </span>
         <span>
-          <StatusGlyph status="warning" size={10} /> 3 L/min or more above the usual
+          <StatusGlyph status="warning" size={10} /> {margin} L/min or more above the usual
         </span>
       </div>
       <div ref={ref} className={styles.wrap}>

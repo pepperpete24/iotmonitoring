@@ -1,7 +1,8 @@
 /** /incidents/:id: is it being handled, and what is the evidence? */
 import { useMemo } from "react";
 import { Link, useParams } from "react-router-dom";
-import { useIncident, usePortfolioStatus, useSeries } from "@/api/queries";
+import { useIncident, usePortfolioStatus, useSeries, useSettings } from "@/api/queries";
+import { thresholdLines } from "@/lib/ruleText";
 import type { IncidentDetail, NotificationView } from "@/api/types";
 import { type ChartEvent, type ChartPanel, TimeChart } from "@/components/charts/TimeChart";
 import { StatusGlyph, StatusLabel } from "@/components/status/StatusGlyph";
@@ -23,7 +24,7 @@ export function IncidentDetailPage() {
     return (
       <div className={styles.page}>
         <h1 className="t-title">Incident {id} not found</h1>
-        <p className="t-prose">No incident has this number. Incidents are numbered I-2026-0121 onwards; check the link or open the list of incidents.</p>
+        <p className="t-prose">No incident has this number. Check the link, or open the list of incidents to find it.</p>
         <Link to="/incidents">Open the list of incidents</Link>
       </div>
     );
@@ -139,6 +140,7 @@ const MEASURE: Record<string, { color: string; unit: string; state?: [string, st
 
 export function Evidence({ i }: { i: IncidentDetail }) {
   const portfolio = usePortfolioStatus();
+  const rules = useSettings().data?.rules ?? [];
   const b = portfolio.data?.buildings.find((x) => x.id === i.buildingId);
   // channels: the meter that measured the leak first, then each alerting device, state channels last
   const channels = useMemo(() => {
@@ -171,11 +173,9 @@ export function Evidence({ i }: { i: IncidentDetail }) {
     if (c.measure === "flow" && b && i.leak) {
       thresholds.push({ value: b.nightBaselineLpm, label: `Usual overnight ${formatNumber(b.nightBaselineLpm, 1)} L/min` });
     }
-    if (c.measure === "pressure") thresholds.push({ value: 200, label: "Minimum 200 kPa" });
-    if (c.measure === "temperature" && c.title.startsWith("Cool")) thresholds.push({ value: 5, label: "Limit 5 °C" });
-    if (c.measure === "temperature" && c.title.startsWith("Hot")) thresholds.push({ value: 55, label: "Minimum 55 °C" });
-    if (c.measure === "duty") thresholds.push({ value: 15, label: "Overnight limit 15%" });
-    if (c.measure === "level") thresholds.push({ value: 40, label: "Low 40%" });
+    const alert = i.alerts.find((a) => c.id.startsWith(`${a.deviceId}/`));
+    const kind = ({ pressure: "pressure-sensor", temperature: "temperature-probe", duty: "pump-monitor", level: "tank-level", flow: "flow-meter" } as Record<string, string>)[c.measure] ?? "";
+    thresholds.push(...thresholdLines(c.measure, { kind, tag: alert?.deviceTag ?? "", location: alert?.location ?? "" }, rules));
     panels.push({
       id: c.id,
       title: c.title,

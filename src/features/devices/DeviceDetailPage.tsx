@@ -10,6 +10,7 @@ import { Tag } from "@/components/Tag";
 import { DAY, formatAgo, formatDate, formatDateTime, formatNumber, formatTimeZoned } from "@/lib/format";
 import { useSimNow } from "@/state/clock";
 import { useUi } from "@/state/ui";
+import { FLEET } from "@/lib/ruleText";
 import styles from "./DeviceDetailPage.module.css";
 
 const COLOR: Record<string, string> = { flow: "var(--jade)", level: "var(--jade)", pressure: "var(--gauge)", temperature: "var(--thermal)", wet: "var(--jade)", door: "var(--ink)", valve: "var(--ink)", duty: "var(--ink)" };
@@ -97,7 +98,7 @@ export function DeviceDetailPage() {
       <div className={styles.columns}>
         <TimeChart
           caption="Battery, last 90 days"
-          panels={[{ id: "b", title: "Battery", unit: "%", color: "var(--ink)", points: data.battery, decimals: 1, thresholds: [{ value: 20, label: "Replace below 20%" }], yMin: 0 }]}
+          panels={[{ id: "b", title: "Battery", unit: "%", color: "var(--ink)", points: data.battery, decimals: 1, thresholds: [{ value: FLEET.lowBatteryPct, label: `Replace below ${FLEET.lowBatteryPct}%` }], yMin: 0 }]}
           from={data.battery[0]![0]}
           to={data.battery[data.battery.length - 1]![0]}
           zone={z}
@@ -106,7 +107,7 @@ export function DeviceDetailPage() {
         <TimeChart
           caption="Signal, last 7 days, hourly"
           panels={[
-            { id: "r", title: "RSSI", unit: "dBm", color: "var(--ink)", points: data.signal.map(([t, r]) => [t, r]), decimals: 0, thresholds: [{ value: -110, label: "Weak below -110 dBm" }], gaps: data.gaps },
+            { id: "r", title: "RSSI", unit: "dBm", color: "var(--ink)", points: data.signal.map(([t, r]) => [t, r]), decimals: 0, thresholds: [{ value: FLEET.weakRssiDbm, label: `Weak below ${FLEET.weakRssiDbm} dBm` }], gaps: data.gaps },
             { id: "s", title: "SNR", unit: "dB", color: "var(--ink-soft)", points: data.signal.map(([t, , s]) => [t, s]), decimals: 1 },
           ]}
           from={data.signal[0]![0]}

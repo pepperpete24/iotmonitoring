@@ -6,6 +6,7 @@ import type { Incident, Notification } from "@/domain/building";
 import { type AnnunciatorState, type Status, STATUS_RANK, type UtcMs, worstStatus } from "@/domain/common";
 import type { Device } from "@/domain/ingestion";
 import { DAY, fromLocal, localParts, MINUTE } from "@/lib/format";
+import { FLEET } from "@/lib/ruleText";
 import type { Engine } from "@/mock/engine/engine";
 import { sentOnly } from "@/mock/engine/escalation";
 import { active } from "@/mock/signals/effects";
@@ -129,8 +130,8 @@ export function fleetExceptions(engine: Engine, now: UtcMs): FleetExceptions {
     if (st === "paused") out.paused.push(d);
     if (st === "muted") out.muted.push(d);
     const h = healthAt(d.id, now, DEMO_START);
-    if (h.battery < 20) out.lowBattery.push(d);
-    if (d.rssi < -110) out.weakSignal.push(d);
+    if (h.battery < FLEET.lowBatteryPct) out.lowBattery.push(d);
+    if (d.rssi < FLEET.weakRssiDbm) out.weakSignal.push(d);
   }
   return out;
 }

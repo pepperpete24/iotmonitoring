@@ -75,7 +75,7 @@ export function TopBar() {
       <button type="button" className={styles.search} onClick={() => window.dispatchEvent(new Event("open-command-search"))} aria-keyshortcuts="Control+K">
         <Search size={14} strokeWidth={1.5} aria-hidden />
         <span>Search</span>
-        <kbd>Ctrl K</kbd>
+        <kbd aria-hidden>Ctrl K</kbd>
       </button>
       <div className={styles.meta}>
         <time className={styles.clock} dateTime={new Date(now).toISOString()}>

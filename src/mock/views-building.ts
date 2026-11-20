@@ -13,6 +13,7 @@ import { personById } from "@/mock/world/people";
 import { ROSTER } from "@/mock/world/rules";
 import { deviceById, FIRMWARE_LATEST, topologyOf } from "@/mock/world/topology";
 import { incidentSummary } from "./views";
+import { FLEET } from "@/lib/ruleText";
 
 export function deviceLive(engine: Engine, d: Device, now: UtcMs): DeviceLive {
   const status = deviceState(engine, d, now);
@@ -59,7 +60,7 @@ export function deviceLive(engine: Engine, d: Device, now: UtcMs): DeviceLive {
     battery: h.battery,
     rssi: h.rssi,
     snr: h.snr,
-    weakSignal: d.rssi < -110,
+    weakSignal: d.rssi < FLEET.weakRssiDbm,
     link: d.link,
     gatewayTag: d.gatewayId ? d.gatewayId.split("/")[1]! : null,
     firmware: d.firmware,

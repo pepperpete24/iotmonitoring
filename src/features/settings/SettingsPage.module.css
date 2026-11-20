@@ -64,8 +64,15 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
+  min-width: 0;
+  max-width: 100%;
   font-size: var(--fs-13);
   color: var(--ink-soft);
+}
+
+.field select,
+.field input {
+  max-width: 100%;
 }
 
 .field select,
@@ -93,6 +100,7 @@
 }
 
 .step {
+  min-width: 0;
   display: grid;
   grid-template-columns: 28px minmax(220px, 1fr) auto 110px auto;
   align-items: end;
@@ -115,6 +123,8 @@
 
 .channels {
   display: flex;
+  flex-wrap: wrap;
+  min-width: 0;
   gap: 12px;
   border: 0;
   padding: 0;

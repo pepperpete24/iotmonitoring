@@ -2,7 +2,9 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import type { BuildingDetail, DeviceLive, IncidentSummary } from "@/api/types";
-import { useLogbook, useSeries } from "@/api/queries";
+import { useLogbook, useSeries, useSettings } from "@/api/queries";
+import { thresholdLines } from "@/lib/ruleText";
+import { usePhone } from "@/lib/useMedia";
 import { Segmented } from "@/components/Button";
 import { type ChartEvent, type ChartPanel, TimeChart } from "@/components/charts/TimeChart";
 import { StatusGlyph, StatusLabel } from "@/components/status/StatusGlyph";
@@ -67,7 +69,8 @@ export function OverviewTab({ b }: { b: BuildingDetail }) {
   }
   const loose = b.devices.filter((d) => d.systemId === null);
   if (loose.length) groups.push({ title: "Pits, floors and rooms", devices: loose });
-  const cols = deviceColumns(b.summary.zone, now).filter((c) => c.key !== "kind");
+  const phone = usePhone();
+  const cols = deviceColumns(b.summary.zone, now).filter((c) => c.key !== "kind" && (!phone || ["tag", "status", "value"].includes(c.key)));
   return (
     <div className={styles.stack}>
       {groups.map((g) => (
@@ -117,17 +120,17 @@ export function ChartsTab({ b }: { b: BuildingDetail }) {
   const pump = b.devices.filter((d) => d.kind === "pump-monitor" && !d.location.toLowerCase().includes("circulating")).sort((a, z) => (z.readings.find((r) => r.measure === "duty")?.value ?? 0) - (a.readings.find((r) => r.measure === "duty")?.value ?? 0))[0];
   const temp = pick("temperature-probe", (d) => d.location.toLowerCase().includes("cool room")) ?? pick("temperature-probe");
   const points = 400;
+  const rules = useSettings().data?.rules ?? [];
   const fs = useSeries(flow ? `${flow.id}/flow` : undefined, { spanMs: span }, points);
   const ps = useSeries(pressure ? `${pressure.id}/pressure` : undefined, { spanMs: span }, points);
   const us = useSeries(pump ? `${pump.id}/duty` : undefined, { spanMs: span }, points);
   const ts = useSeries(temp ? `${temp.id}/temperature` : undefined, { spanMs: span }, points);
   const panels: ChartPanel[] = [];
   if (fs.data && flow) panels.push({ id: "flow", title: `Flow, ${flow.tag}`, unit: "L/min", color: "var(--jade)", points: fs.data.points, gaps: fs.data.gaps, yMin: 0 });
-  if (ps.data && pressure) panels.push({ id: "pressure", title: `Pressure, ${pressure.tag}, ${pressure.location}`, unit: "kPa", color: "var(--gauge)", points: align(ps.data.points, fs.data?.points), gaps: ps.data.gaps, decimals: 0, thresholds: [{ value: 200, label: "Minimum 200 kPa" }] });
+  if (ps.data && pressure) panels.push({ id: "pressure", title: `Pressure, ${pressure.tag}, ${pressure.location}`, unit: "kPa", color: "var(--gauge)", points: align(ps.data.points, fs.data?.points), gaps: ps.data.gaps, decimals: 0, thresholds: thresholdLines("pressure", pressure, rules) });
   if (us.data && pump) panels.push({ id: "duty", title: `Pump duty, ${pump.tag}`, unit: "%", color: "var(--ink)", points: align(us.data.points, fs.data?.points), gaps: us.data.gaps, decimals: 0, yMin: 0 });
   if (ts.data && temp) {
-    const cool = temp.location.toLowerCase().includes("cool room");
-    panels.push({ id: "temp", title: `Temperature, ${temp.tag}, ${temp.location}`, unit: "°C", color: "var(--thermal)", points: align(ts.data.points, fs.data?.points), gaps: ts.data.gaps, thresholds: cool ? [{ value: 5, label: "Limit 5 °C" }] : temp.location.toLowerCase().includes("hot water") ? [{ value: 55, label: "Minimum 55 °C" }] : [] });
+    panels.push({ id: "temp", title: `Temperature, ${temp.tag}, ${temp.location}`, unit: "°C", color: "var(--thermal)", points: align(ts.data.points, fs.data?.points), gaps: ts.data.gaps, thresholds: thresholdLines("temperature", temp, rules) });
   }
   const from = now - span;
   return (
@@ -170,11 +173,13 @@ export function DevicesTab({ b }: { b: BuildingDetail }) {
   const now = useSimNow();
   const { open, target } = useInspect();
   const [sort, setSort] = useState<{ key: string; dir: "asc" | "desc" }>({ key: "status", dir: "asc" });
-  const cols: Column<DeviceLive>[] = [
+  const phone = usePhone();
+  const all: Column<DeviceLive>[] = [
     ...deviceColumns(b.summary.zone, now),
     { key: "battery", header: "Battery", align: "num", render: (d) => `${formatNumber(d.battery, 1)}%`, sortValue: (d) => d.battery },
     { key: "rssi", header: "Signal", align: "num", render: (d) => `${d.rssi} dBm`, sortValue: (d) => d.rssi },
   ];
+  const cols = phone ? all.filter((c) => ["tag", "kind", "status", "value"].includes(c.key)) : all;
   return (
     <DataTable
       caption={`Devices at ${b.summary.name}`}
@@ -221,6 +226,7 @@ export function incidentColumns(now: number, zoneOf: (i: IncidentSummary) => str
 
 export function IncidentsTab({ b }: { b: BuildingDetail }) {
   const now = useSimNow();
+  const phone = usePhone();
   const { open, target } = useInspect();
   const [sort, setSort] = useState<{ key: string; dir: "asc" | "desc" }>({ key: "opened", dir: "desc" });
   if (!b.incidents.length) {
@@ -229,7 +235,7 @@ export function IncidentsTab({ b }: { b: BuildingDetail }) {
   return (
     <DataTable
       caption={`Incidents at ${b.summary.name}, last 90 days`}
-      columns={incidentColumns(now, () => b.summary.zone)}
+      columns={incidentColumns(now, () => b.summary.zone).filter((c) => !phone || ["sev", "id", "what", "state"].includes(c.key))}
       rows={b.incidents}
       rowKey={(i) => i.id}
       sort={sort}

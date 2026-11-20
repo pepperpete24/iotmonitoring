@@ -39,7 +39,9 @@ test("the riser diagram is keyboard navigable and opens devices in the inspector
 
 test("the wet sensor carries the critical glyph and its name says so", async ({ page }) => {
   await page.goto("/buildings/kendall-street-tower");
-  await expect(page.getByRole("button", { name: /WL-B2-03, leak sensor, B2 booster pump room floor, Wet, critical/ })).toBeVisible();
+  const sensor = page.getByRole("button", { name: "WL-B2-03", exact: true });
+  await expect(sensor).toBeVisible();
+  await expect(sensor).toHaveAccessibleDescription("leak sensor, B2 booster pump room floor, Wet, critical");
 });
 
 test("layer and tab are kept in the URL", async ({ page }) => {

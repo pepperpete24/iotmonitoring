@@ -6,14 +6,15 @@ import { StatusLabel } from "@/components/status/StatusGlyph";
 import { Tag } from "@/components/Tag";
 import { type Column, DataTable, type SortState } from "@/components/table/DataTable";
 import { formatAgo, formatNumber } from "@/lib/format";
-import { usePhone } from "@/lib/useMedia";
+import { useNarrow, usePhone } from "@/lib/useMedia";
 import { parseScope, useInspect } from "@/shell/url";
 import { useSimNow } from "@/state/clock";
+import { FLEET } from "@/lib/ruleText";
 import styles from "./DevicesPage.module.css";
 
 const FILTERS = [
   { key: "offline", label: "Offline", test: (d: DeviceRow) => d.status === "offline" || d.status === "paused" },
-  { key: "battery", label: "Battery under 20%", test: (d: DeviceRow) => d.battery < 20 },
+  { key: "battery", label: `Battery under ${FLEET.lowBatteryPct}%`, test: (d: DeviceRow) => d.battery < FLEET.lowBatteryPct },
   { key: "signal", label: "Weak signal", test: (d: DeviceRow) => d.weakSignal },
   { key: "firmware", label: "Firmware behind", test: (d: DeviceRow) => !d.firmwareLatest },
   { key: "silent", label: "No reading in 24 h", test: (d: DeviceRow, now: number) => d.lastUplink === null || now - d.lastUplink > 86_400_000 },
@@ -27,6 +28,7 @@ export function DevicesPage() {
   const portfolio = usePortfolioStatus();
   const now = useSimNow();
   const phone = usePhone();
+  const narrow = useNarrow();
   const { open, target } = useInspect();
   const active = new Set((params.get("filter") ?? "").split(",").filter(Boolean));
   const q = params.get("q") ?? "";
@@ -85,12 +87,16 @@ export function DevicesPage() {
       render: (d) =>
         d.alert ? <StatusLabel status={d.alert} /> : d.status === "offline" ? <StatusLabel status="offline" /> : d.status === "muted" ? <StatusLabel status="muted" /> : d.status === "paused" ? <span>Paused</span> : <span className="soft">Reporting</span>,
     },
-    { key: "battery", header: "Battery", align: "num", sortValue: (d) => d.battery, render: (d) => <span className={d.battery < 20 ? styles.flag : undefined}>{formatNumber(d.battery, 1)}%</span> },
+    { key: "battery", header: "Battery", align: "num", sortValue: (d) => d.battery, render: (d) => <span className={d.battery < FLEET.lowBatteryPct ? styles.flag : undefined}>{formatNumber(d.battery, 1)}%</span> },
     { key: "rssi", header: "Signal", align: "num", sortValue: (d) => d.rssi, render: (d) => <span className={d.weakSignal ? styles.flag : undefined}>{d.rssi} dBm{d.weakSignal ? ", weak" : ""}</span> },
     { key: "fw", header: "Firmware", align: "num", sortValue: (d) => d.firmware, render: (d) => <span className={d.firmwareLatest ? undefined : styles.flag}>{d.firmware}{d.firmwareLatest ? "" : ", behind"}</span> },
     { key: "last", header: "Last uplink", align: "num", sortValue: (d) => d.lastUplink ?? 0, render: (d) => (d.lastUplink ? formatAgo(now - d.lastUplink) : "Over 4 days") },
   ];
-  const cols = phone ? columns.filter((c) => ["tag", "kind", "status"].includes(c.key)) : columns;
+  const cols = phone
+    ? columns.filter((c) => ["tag", "kind", "status"].includes(c.key))
+    : narrow
+      ? columns.filter((c) => !["fw", "last", "where"].includes(c.key))
+      : columns;
   return (
     <div className={styles.page}>
       <h1 className="t-title">Devices</h1>

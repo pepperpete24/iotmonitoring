@@ -11,7 +11,7 @@ import { BUILDING_TYPE_LABEL, STATE_ORDER, STATUS_LABEL, STATUS_RANK } from "@/d
 import { formatDuration, formatNumber, formatTimeZoned } from "@/lib/format";
 import { parseScope, useInspect } from "@/shell/url";
 import { useSimNow } from "@/state/clock";
-import { usePhone } from "@/lib/useMedia";
+import { useNarrow, usePhone, useTablet } from "@/lib/useMedia";
 import { AustraliaMap } from "./AustraliaMap";
 import { briefingSegments, waterSentence } from "./briefing";
 import { MiniRiser } from "./MiniRiser";
@@ -39,6 +39,8 @@ export function PortfolioPage() {
   const scope = parseScope(params.get("scope"));
   const [expanded, setExpanded] = useState<string | null>(null);
   const phone = usePhone();
+  const narrow = useNarrow();
+  const tablet = useTablet();
   const [sort, setSort] = useState<SortState>({ key: "building", dir: "asc" });
   const setParam = (k: string, v: string | null) =>
     setParams(
@@ -88,7 +90,13 @@ export function PortfolioPage() {
   const byAttention = (a: BuildingSummary, z: BuildingSummary) => attentionRank(a) - attentionRank(z) || a.name.localeCompare(z.name);
   const all = ledgerColumns(zone);
   // At phone width the ledger keeps what answers "which building needs me".
-  const columns = phone ? all.filter((c) => ["building", "status", "open"].includes(c.key)) : all;
+  const columns = phone
+    ? all.filter((c) => ["building", "status", "open"].includes(c.key))
+    : tablet
+      ? all.filter((c) => !["water", "night", "last"].includes(c.key))
+      : narrow
+        ? all.filter((c) => c.key !== "last")
+        : all;
   const groups: Array<{ title: string | null; rows: BuildingSummary[] }> =
     view === "state"
       ? STATE_ORDER.filter((s) => rows.some((b) => b.state === s)).map((s) => ({ title: s, rows: rows.filter((b) => b.state === s) }))

@@ -7,7 +7,7 @@ import { Segmented } from "@/components/Button";
 import { DataTable, type SortState } from "@/components/table/DataTable";
 import { INCIDENT_CATEGORY_LABEL, type IncidentCategory } from "@/domain/building";
 import { formatNumber } from "@/lib/format";
-import { usePhone } from "@/lib/useMedia";
+import { useNarrow, usePhone } from "@/lib/useMedia";
 import { incidentColumns } from "@/features/building/tabs";
 import { parseScope, useInspect } from "@/shell/url";
 import { useSimNow } from "@/state/clock";
@@ -22,6 +22,7 @@ export function IncidentsPage() {
   const portfolio = usePortfolioStatus();
   const now = useSimNow();
   const phone = usePhone();
+  const narrow = useNarrow();
   const { open, target } = useInspect();
   const sev = (params.get("severity") as Sev) || "all";
   const category = params.get("category") ?? "";
@@ -67,7 +68,11 @@ export function IncidentsPage() {
   const viewerZone = portfolio.data?.organisation.viewerZone ?? "Australia/Sydney";
   const zoneOf = (_i: IncidentSummary) => viewerZone;
   const allCols = incidentColumns(now, zoneOf, true);
-  const cols = phone ? allCols.filter((c) => ["sev", "id", "what", "state"].includes(c.key)) : allCols;
+  const cols = phone
+    ? allCols.filter((c) => ["sev", "id", "what", "state"].includes(c.key))
+    : narrow
+      ? allCols.filter((c) => !["water", "dur"].includes(c.key))
+      : allCols;
   const water = list.filter((i) => i.state === "resolved").reduce((s, i) => s + (i.waterLostL ?? 0), 0);
 
   return (

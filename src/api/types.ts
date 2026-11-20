@@ -245,6 +245,8 @@ export interface DeviceDetail {
 export interface WaterView {
   scope: { buildingId: string | null; name: string };
   tariffPerKL: number;
+  /** The overnight-flow rule's margin, L/min: a night this far above its usual is a breach. */
+  breachMarginLpm: number;
   /** Last 30 days, one row per local day: actual and the usual for that weekday. */
   daily: Array<{ day: UtcMs; actualL: number; expectedL: number }>;
   /** Last 48 hours by hour. */

@@ -10,24 +10,9 @@ import { healthAt, uplinksBetween } from "@/mock/signals/uplinks";
 import { BUILDINGS, buildingById, type BuildingProfile } from "@/mock/world/buildings";
 import { personName } from "@/mock/world/people";
 import { deviceById, topologyOf } from "@/mock/world/topology";
+import { RULES } from "@/mock/world/rules";
+import { ruleSentence, rulesFor } from "@/lib/ruleText";
 import { deviceLive } from "./views-building";
-
-const RULE_TEXT: Record<string, string[]> = {
-  "leak-sensor": ["Critical when wet for 1 min"],
-  "pump-monitor": ["Warning when duty is above 15% for 45 min between 00:00 and 05:00"],
-  "door-contact": ["Warning when open for 10 min"],
-  gateway: ["Warning when not heard for 15 min"],
-  "pressure-sensor": ["Warning when below 200 kPa for 1 min"],
-  "tank-level": ["Warning when below 40% for 15 min", "Critical when above 98% for 3 min"],
-};
-
-function rulesFor(kind: string, tag: string, location: string): string[] {
-  const loc = location.toLowerCase();
-  if (kind === "flow-meter") return tag === "FT-01" ? ["Warning when overnight flow is 3 L/min above baseline for 30 min (00:00 to 05:00)", "Critical when 20 L/min above expected for 2 min"] : ["Critical when 20 L/min above expected for 2 min"];
-  if (kind === "temperature-probe") return loc.includes("cool room") ? ["Warning when above 5 °C for 15 min"] : loc.includes("hot water") ? ["Warning when below 55 °C for 30 min"] : [];
-  if (kind === "tank-level" && loc.includes("fire")) return ["Warning when below 40% for 15 min"];
-  return RULE_TEXT[kind] ?? [];
-}
 
 export function deviceDetail(engine: Engine, id: string, now: UtcMs): DeviceDetail | null {
   const d = deviceById(id);
@@ -84,7 +69,7 @@ export function deviceDetail(engine: Engine, id: string, now: UtcMs): DeviceDeta
     calibratedAt: d.calibratedAt,
     replacedAt: ov?.replacedAt ?? null,
     lossRatePct: Math.round(d.lossRate * 1000) / 10,
-    rules: rulesFor(d.kind, d.tag, d.location),
+    rules: rulesFor(d, RULES).map(ruleSentence),
     battery,
     signal,
     uplinks,
@@ -144,6 +129,9 @@ export function waterView(engine: Engine, buildingId: string | null, now: UtcMs)
     hourly.push({ t, actualL, expectedL: usual / 4 });
   }
 
+  // a night breaches when it runs the overnight-flow rule's margin above its usual
+  const margin = RULES.find((r) => r.id === "overnight-flow")!.threshold;
+
   // overnight baseline for one building
   const nb = buildingById.get(buildingId ?? "kendall-street-tower")!;
   const last = lastCompletedNight(nb, now);
@@ -154,7 +142,7 @@ export function waterView(engine: Engine, buildingId: string | null, now: UtcMs)
     const value = nightFlow(engine, nb, night);
     cache.set(night, value);
     const base = nightBaseline(engine, nb, night, cache);
-    points.push({ night, value, p10: base.p10, p50: base.median, p90: base.p90, breach: value !== null && value - base.median >= 3 });
+    points.push({ night, value, p10: base.p10, p50: base.median, p90: base.p90, breach: value !== null && value - base.median >= margin });
   }
 
   // anomalies across the scope: nights 3 L/min or more above the building's own baseline
@@ -168,7 +156,7 @@ export function waterView(engine: Engine, buildingId: string | null, now: UtcMs)
       c2.set(night, v);
       if (v === null) continue;
       const base = nightBaseline(engine, b, night, c2);
-      if (v - base.median >= 3) {
+      if (v - base.median >= margin) {
         const inc = engine.world.incidents.find((i) => i.buildingId === b.id && i.openedAt <= night + 4 * HOUR && (i.resolvedAt ?? now) >= night - 2 * HOUR && i.leak);
         anomalies.push({ buildingId: b.id, name: b.name, night, value: v, baseline: base.median, excess: Math.round((v - base.median) * 10) / 10, incidentId: inc?.id ?? null });
       }
@@ -197,8 +185,9 @@ export function waterView(engine: Engine, buildingId: string | null, now: UtcMs)
     .reduce((s, i) => s + (waterLostL(i, now) ?? 0), 0);
   const t = engine.tariffPerKL;
   return {
-    scope: { buildingId, name: buildingId ? nb.name : "All 16 buildings" },
+    scope: { buildingId, name: buildingId ? nb.name : `All ${BUILDINGS.length} buildings` },
     tariffPerKL: t,
+    breachMarginLpm: margin,
     daily,
     hourly,
     nights: { buildingId: nb.id, name: nb.name, points },

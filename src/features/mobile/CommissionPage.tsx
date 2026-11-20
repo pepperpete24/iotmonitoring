@@ -13,6 +13,7 @@ import { hashString } from "@/mock/seed";
 import { simNow, useSimNow } from "@/state/clock";
 import { PhoneFrame } from "./PhoneFrame";
 import { symbolFor } from "@/features/building/riserLayout";
+import { FLEET } from "@/lib/ruleText";
 import styles from "./Phone.module.css";
 
 const STEPS = ["Scan the label", "Confirm the model", "Where it is", "Name the tag", "Check signal", "Test it", "Photo", "Finish"];
@@ -229,6 +230,9 @@ export function CommissionPage() {
   );
 }
 
+/** The meter's scale, in dBm: the range LoRaWAN devices report in practice. */
+const METER = { min: -125, max: -60 } as const;
+
 /** A live RSSI and SNR meter, settling over a few seconds, with a verdict in plain words. */
 function SignalCheck({ location, gateway, onDone }: { location: string; gateway: string; onDone: () => void }) {
   const pit = /pit|sump|tank|basement car park/i.test(location);
@@ -243,20 +247,21 @@ function SignalCheck({ location, gateway, onDone }: { location: string; gateway:
   const settled = k >= 6;
   const rssi = Math.round(target + (settled ? 0 : ((hashString(`${k}${location}`) % 13) - 6)));
   const snr = Math.round((rssi + 100) / 2.2 * 10) / 10;
-  const pos = Math.min(100, Math.max(0, ((rssi + 125) / 65) * 100));
-  const weak = rssi < -110;
+  const span = METER.max - METER.min;
+  const pos = Math.min(100, Math.max(0, ((rssi - METER.min) / span) * 100));
+  const weak = rssi < FLEET.weakRssiDbm;
   return (
     <div className={styles.stack}>
       <h1 className={styles.headline}>Check signal</h1>
       <div className={styles.meter} aria-live="polite">
-        <div className={styles.meterTrack} role="meter" aria-valuemin={-125} aria-valuemax={-60} aria-valuenow={rssi} aria-label="Signal strength, RSSI">
-          <div className={styles.meterWeak} style={{ width: `${((-110 + 125) / 65) * 100}%` }} />
+        <div className={styles.meterTrack} role="meter" aria-valuemin={METER.min} aria-valuemax={METER.max} aria-valuenow={rssi} aria-label="Signal strength, RSSI">
+          <div className={styles.meterWeak} style={{ width: `${((FLEET.weakRssiDbm - METER.min) / span) * 100}%` }} />
           <div className={styles.meterNeedle} style={{ left: `${pos}%` }} />
         </div>
         <div className={styles.meterScale}>
-          <span>-125 dBm</span>
-          <span>Weak below -110</span>
-          <span>-60 dBm</span>
+          <span>{METER.min} dBm</span>
+          <span>Weak below {FLEET.weakRssiDbm}</span>
+          <span>{METER.max} dBm</span>
         </div>
         <p className={styles.liveValue}>
           RSSI {rssi} dBm, SNR {formatNumber(snr, 1)} dB

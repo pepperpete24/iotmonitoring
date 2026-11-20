@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { useUi } from "@/state/ui";
 import { TopBar } from "./TopBar";
@@ -29,7 +29,9 @@ export function AppShell() {
       <AssetTree />
       {treeOpen && <div className={styles.scrim} onClick={() => setTreeOpen(false)} aria-hidden />}
       <main id="canvas" className={styles.canvas} tabIndex={-1}>
-        <Outlet />
+        <Suspense fallback={<p className={styles.loading}>Opening</p>}>
+          <Outlet />
+        </Suspense>
       </main>
       <Inspector />
       <DemoTray />
