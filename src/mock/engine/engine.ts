@@ -16,7 +16,7 @@ import { type Effect, active } from "@/mock/signals/effects";
 import { sample } from "@/mock/signals/signals";
 import { buildingById } from "@/mock/world/buildings";
 import { personName } from "@/mock/world/people";
-import { criticalPolicy, ROSTER, warningPolicy } from "@/mock/world/rules";
+import { criticalPolicy, POLICY_OVERRIDES, restoreRules, ROSTER, ruleById, warningPolicy } from "@/mock/world/rules";
 
 const ROSTER_FIRST = (buildingId: string) => ROSTER[buildingId]?.[0] ?? "helen";
 import { addDevice, allDevices, deviceById, makeDevice, removeAddedDevices, topologyOf } from "@/mock/world/topology";
@@ -49,6 +49,9 @@ export type Command =
   | { type: "move-device"; deviceId: string; location: string; by: string }
   | { type: "replace-device"; deviceId: string; reason: string; by: string }
   | { type: "test-alert"; deviceId: string; by: string }
+  | { type: "set-escalation"; buildingId: string; steps: Array<{ personId: string; channels: Array<"sms" | "push" | "email">; waitMin: number }>; by: string }
+  | { type: "set-rule"; ruleId: string; threshold: number; minDurationMin: number; by: string }
+  | { type: "setting"; target: string; detail: string; by: string }
   | { type: "commission-device"; buildingId: string; tag: string; kind: DeviceKind; levelId: string; systemId: string | null; location: string; devEui: string; photo: string | null; by: string }
   | { type: "trigger"; scenario: "burst" | "door" | "gateway" | "leak-false-alarm"; by: string };
 
@@ -100,6 +103,7 @@ export class Engine {
   private addedDevices: string[] = [];
 
   reset() {
+    restoreRules();
     removeAddedDevices(this.addedDevices ?? []);
     this.addedDevices = [];
     this.world = buildWorld();
@@ -611,6 +615,38 @@ export class Engine {
         this.world.notifications.push(n);
         this.log(cmd.by, "test-message", { buildingId: d.buildingId, deviceId: d.id, target: d.tag, detail: `Test alert from ${d.tag} sent to ${personName(first)} by SMS: ${lowerFirst(n.detail)}.` });
         this.emit("notifications");
+        break;
+      }
+      case "set-escalation": {
+        if (!cmd.steps.length) throw new CommandError(400, "Keep at least one step, or nobody will be called.");
+        if (cmd.steps.some((x) => !x.channels.length)) throw new CommandError(400, "Every step needs at least one channel.");
+        POLICY_OVERRIDES.set(
+          cmd.buildingId,
+          cmd.steps.map((x, k) => ({ order: k + 1, personId: x.personId, channels: x.channels, waitMin: Math.max(1, Math.min(60, Math.round(x.waitMin))) })),
+        );
+        const b = buildingById.get(cmd.buildingId)!;
+        this.log(cmd.by, "setting-changed", {
+          buildingId: b.id,
+          target: "Escalation",
+          detail: `Escalation for ${b.name} changed: ${cmd.steps.map((x, k) => `${k + 1}. ${personName(x.personId)} by ${x.channels.map((c) => (c === "sms" ? "SMS" : c === "push" ? "push" : "email")).join(" and ")}, wait ${x.waitMin} min`).join("; ")}.`,
+        });
+        this.emit("settings");
+        break;
+      }
+      case "set-rule": {
+        const r = ruleById.get(cmd.ruleId);
+        if (!r) throw new CommandError(404, "No such rule.");
+        if (!Number.isFinite(cmd.threshold) || !Number.isFinite(cmd.minDurationMin) || cmd.minDurationMin < 0 || cmd.minDurationMin > 720) throw new CommandError(400, "Enter a threshold and a duration between 0 and 720 minutes.");
+        const before = `${r.threshold}, ${r.minDurationMin} min`;
+        r.threshold = cmd.threshold;
+        r.minDurationMin = cmd.minDurationMin;
+        this.log(cmd.by, "setting-changed", { buildingId: null, target: r.name, detail: `Rule "${r.name}" changed from ${before} to ${cmd.threshold}, ${cmd.minDurationMin} min.` });
+        this.emit("settings");
+        break;
+      }
+      case "setting": {
+        this.log(cmd.by, "setting-changed", { buildingId: null, target: cmd.target, detail: cmd.detail });
+        this.emit("settings");
         break;
       }
       case "commission-device": {

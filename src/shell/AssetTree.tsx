@@ -107,6 +107,14 @@ export function AssetTree() {
     );
   }
 
+  if (data && data.buildings.length === 0) {
+    return (
+      <nav className={styles.tree} aria-label="Buildings">
+        <p className={styles.message}>No buildings yet. Each building appears here once its first device is commissioned.</p>
+      </nav>
+    );
+  }
+
   const select = (n: Node) => {
     if (n.kind === "building") {
       const id = n.id.slice("building:".length);

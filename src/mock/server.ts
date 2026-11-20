@@ -5,11 +5,13 @@
  */
 import { CommandError, type Command } from "@/mock/engine/engine";
 import { engine, runCommand, sync } from "@/mock/runtime";
+import { useUi } from "@/state/ui";
 import { personById, PEOPLE } from "@/mock/world/people";
 import { incidentDetail, incidentSummary, logbookView, portfolioStatus } from "./views";
 import { buildingDetail, deviceLive, series } from "./views-building";
 import { deviceDetail, waterView } from "./views-more";
 import { monthlyReport } from "./views-reports";
+import { settingsView } from "./views-settings";
 import { allDevices, nextTag, topologyOf } from "@/mock/world/topology";
 import type { DeviceKind } from "@/domain/ingestion";
 import { buildingById } from "@/mock/world/buildings";
@@ -70,6 +72,8 @@ const routes: Array<[method: string, pattern: RegExp, keys: string[], handler: H
       return ok(monthlyReport(engine, month, engine.now));
     },
   ],
+
+  ["GET", /^\/api\/settings$/, [], () => ok(settingsView(engine))],
 
   [
     "GET",
@@ -195,7 +199,8 @@ const routes: Array<[method: string, pattern: RegExp, keys: string[], handler: H
 
 /** SMS delivery health for a person: the last four SMS sent to them, newest last. */
 function smsHealth(personId: string) {
-  const sms = engine.world.notifications.filter((n) => n.personId === personId && n.channel === "sms" && n.at <= engine.now && n.result !== "held");
+  // delivery receipts arrive a few seconds after sending
+  const sms = engine.world.notifications.filter((n) => n.personId === personId && n.channel === "sms" && n.at <= engine.now + 30_000 && n.result !== "held");
   const recent = sms.slice(-4);
   return {
     recent: recent.length,
@@ -205,8 +210,32 @@ function smsHealth(personId: string) {
   };
 }
 
+/** Day one: an account with no buildings yet. Only the demo tray turns this on. */
+function dayOne(method: string, pathname: string): MockResponse | null {
+  if (method !== "GET") return null;
+  if (pathname === "/api/portfolio/status") {
+    return ok({
+      organisation: { id: "new-customer", name: "Harbourline Property Partners", shortName: "Harbourline", viewerZone: "Australia/Sydney", tariffPerKL: engine.tariffPerKL },
+      asOf: engine.now,
+      briefing: { critical: [], warnings: 0, warningsUnacknowledged: 0, offline: 0, muted: 0, water24hL: 0, water24hUsualL: 0, weekday: "Friday" },
+      buildings: [],
+      openIncidents: [],
+      deviceExceptions: [],
+    });
+  }
+  if (pathname === "/api/incidents" || pathname === "/api/devices" || pathname === "/api/logbook") return ok([]);
+  if (pathname.startsWith("/api/buildings/") || pathname === "/api/water" || pathname.startsWith("/api/incidents/") || pathname.startsWith("/api/devices/")) {
+    return { status: 404, body: "No buildings yet." };
+  }
+  return null;
+}
+
 export function handle(method: string, path: string, body?: unknown): MockResponse {
   sync();
+  if (useUi.getState().dayOne) {
+    const r = dayOne(method, path.split("?")[0] ?? "");
+    if (r) return r;
+  }
   const [pathname, search] = path.split("?");
   const query = new URLSearchParams(search ?? "");
   for (const [m, pattern, keys, handler] of routes) {

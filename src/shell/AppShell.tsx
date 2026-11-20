@@ -6,6 +6,7 @@ import { WatchBar } from "./WatchBar";
 import { AssetTree } from "./AssetTree";
 import { Inspector } from "./Inspector";
 import { DemoTray } from "./DemoTray";
+import { CommandSearch } from "./CommandSearch";
 import { useInspect } from "./url";
 import styles from "./AppShell.module.css";
 
@@ -32,6 +33,7 @@ export function AppShell() {
       </main>
       <Inspector />
       <DemoTray />
+      <CommandSearch />
     </div>
   );
 }

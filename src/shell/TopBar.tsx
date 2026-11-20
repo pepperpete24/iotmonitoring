@@ -1,6 +1,6 @@
 import * as Menu from "@radix-ui/react-dropdown-menu";
 import { Link, NavLink, useLocation, useMatch } from "react-router-dom";
-import { Menu as MenuIcon, PanelLeft } from "lucide-react";
+import { Menu as MenuIcon, PanelLeft, Search } from "lucide-react";
 import { useSimNow } from "@/state/clock";
 import { useUi } from "@/state/ui";
 import { formatDateTime, formatTimeZoned } from "@/lib/format";
@@ -72,6 +72,11 @@ export function TopBar() {
           </Menu.Content>
         </Menu.Portal>
       </Menu.Root>
+      <button type="button" className={styles.search} onClick={() => window.dispatchEvent(new Event("open-command-search"))} aria-keyshortcuts="Control+K">
+        <Search size={14} strokeWidth={1.5} aria-hidden />
+        <span>Search</span>
+        <kbd>Ctrl K</kbd>
+      </button>
       <div className={styles.meta}>
         <time className={styles.clock} dateTime={new Date(now).toISOString()}>
           <span className={styles.long}>{formatDateTime(now, viewerZone)}</span>

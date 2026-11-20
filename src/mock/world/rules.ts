@@ -167,9 +167,23 @@ function channelsFor(personId: string, position: number): NotifyChannel[] {
   return position === 0 ? ["sms", "push"] : ["sms"];
 }
 
-export function criticalPolicy(buildingId: string): EscalationPolicy {
+/** Escalation steps edited in Settings, per building. Cleared on reset. */
+export const POLICY_OVERRIDES = new Map<string, EscalationStep[]>();
+
+/** Rule thresholds as built, so a reset can restore edits made in Settings. */
+const RULE_DEFAULTS = new Map(RULES.map((r) => [r.id, { threshold: r.threshold, minDurationMin: r.minDurationMin }]));
+export function restoreRules() {
+  for (const r of RULES) Object.assign(r, RULE_DEFAULTS.get(r.id));
+  POLICY_OVERRIDES.clear();
+}
+
+export function defaultSteps(buildingId: string): EscalationStep[] {
   const roster = ROSTER[buildingId] ?? ["helen"];
-  const steps: EscalationStep[] = roster.map((p, i) => ({ order: i + 1, personId: p, channels: channelsFor(p, i), waitMin: 10 }));
+  return roster.map((p, i) => ({ order: i + 1, personId: p, channels: channelsFor(p, i), waitMin: 10 }));
+}
+
+export function criticalPolicy(buildingId: string): EscalationPolicy {
+  const steps: EscalationStep[] = POLICY_OVERRIDES.get(buildingId) ?? defaultSteps(buildingId);
   return {
     id: `critical/${buildingId}`,
     name: "Critical alerts",

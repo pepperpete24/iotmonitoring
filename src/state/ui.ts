@@ -14,6 +14,9 @@ interface UiState {
   trayOpen: boolean;
   treeOpen: boolean;
   role: Role;
+  /** Demo only: show an empty customer on their first day. */
+  dayOne: boolean;
+  setDayOne: (d: boolean) => void;
   setTheme: (t: ThemePref) => void;
   setDensity: (d: Density) => void;
   setTrayOpen: (o: boolean) => void;
@@ -48,6 +51,8 @@ export const useUi = create<UiState>((set, get) => ({
   trayOpen: false,
   treeOpen: false,
   role: "helen",
+  dayOne: false,
+  setDayOne: (dayOne) => set({ dayOne }),
   setTheme: (theme) => {
     set({ theme });
     save({ theme, density: get().density });

@@ -16,7 +16,15 @@ export function WaterPage() {
   const buildingId = params.get("building") ?? (scope.kind === "building" ? scope.id : undefined);
   const { data: w, isPending, isError, isFetching, refetch } = useWater(buildingId);
 
-  if (isPending) return <div className={styles.page} aria-busy><h1 className="t-title">Water</h1><p className="soft">Adding up 30 days of readings</p></div>;
+  if (isPending && !(portfolio.data && portfolio.data.buildings.length === 0)) return <div className={styles.page} aria-busy><h1 className="t-title">Water</h1><p className="soft">Adding up 30 days of readings</p></div>;
+  if (portfolio.data && portfolio.data.buildings.length === 0) {
+    return (
+      <div className={styles.page}>
+        <h1 className="t-title">Water</h1>
+        <p className="t-prose soft">No water data yet. Use against the usual, the overnight baseline and benchmarks appear after the first day of readings from a building's main meter.</p>
+      </div>
+    );
+  }
   if (isError || !w) {
     return (
       <div className={styles.page}>

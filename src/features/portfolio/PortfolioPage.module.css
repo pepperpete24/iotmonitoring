@@ -132,3 +132,32 @@
     padding: 16px 16px 64px;
   }
 }
+
+.dayOne {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 72ch;
+}
+
+.ready ol {
+  counter-reset: step;
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--rule);
+}
+
+.ready li {
+  counter-increment: step;
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.ready li::before {
+  content: counter(step);
+  font-family: var(--font-num);
+  font-weight: 600;
+}

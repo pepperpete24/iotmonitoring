@@ -11,6 +11,7 @@ import { DevicesPage } from "@/features/devices/DevicesPage";
 import { DeviceDetailPage } from "@/features/devices/DeviceDetailPage";
 import { WaterPage } from "@/features/water/WaterPage";
 import { RespondPage } from "@/features/mobile/RespondPage";
+import { SettingsPage } from "@/features/settings/SettingsPage";
 import { CommissionPage } from "@/features/mobile/CommissionPage";
 import { LogbookPage } from "@/features/logbook/LogbookPage";
 import { MonthlyReportPage } from "@/features/reports/MonthlyReportPage";
@@ -43,10 +44,8 @@ const router = createBrowserRouter([
       { path: "reports", element: <Navigate to="/reports/monthly" replace /> },
       { path: "reports/monthly", element: <MonthlyReportPage /> },
       { path: "reports/incident/:id", element: <IncidentReportPage /> },
-      {
-        path: "settings/*",
-        element: <Pending title="Settings" job="Escalation, rules, people, integrations, plan and billing." milestone="M8" />,
-      },
+      { path: "settings", element: <Navigate to="/settings/escalation" replace /> },
+      { path: "settings/:section", element: <SettingsPage /> },
       { path: "dev/symbols", element: <SymbolsPage /> },
       { path: "dev/tokens", element: <TokensPage /> },
       {

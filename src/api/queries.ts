@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Command } from "@/mock/engine/engine";
 import { transport } from "./transport";
 import type { MonthlyReport } from "@/mock/views-reports";
+import type { SettingsView } from "@/mock/views-settings";
 import type { DeviceDetail, DeviceLive, WaterView, BuildingDetail, IncidentDetail, IncidentSummary, LogbookView, PortfolioStatus, SeriesView } from "./types";
 
 export const queryKeys = {
@@ -117,6 +118,16 @@ export function useNextTag(buildingId: string, kind: string, levelId: string) {
     queryFn: () => transport.get<{ tag: string }>(`/api/buildings/${buildingId}/next-tag?kind=${kind}&level=${encodeURIComponent(levelId)}`),
     enabled: !!buildingId && !!levelId,
   });
+}
+
+export function useSettings() {
+  return useQuery({ queryKey: ["settings"], queryFn: () => transport.get<SettingsView>("/api/settings") });
+}
+
+export type PersonRow = import("@/domain/building").Person & { sms: { recent: number; recentFailed: number; lastResult: string | null; lastAt: number | null } };
+
+export function usePeople() {
+  return useQuery({ queryKey: queryKeys.people, queryFn: () => transport.get<PersonRow[]>("/api/people") });
 }
 
 /** Send a person's action. Every query refreshes once the engine has applied it. */

@@ -15,6 +15,7 @@ import { usePhone } from "@/lib/useMedia";
 import { AustraliaMap } from "./AustraliaMap";
 import { briefingSegments, waterSentence } from "./briefing";
 import { MiniRiser } from "./MiniRiser";
+import { DayOne } from "./DayOne";
 import { incidentHeadline } from "@/lib/headline";
 import styles from "./PortfolioPage.module.css";
 
@@ -70,6 +71,13 @@ export function PortfolioPage() {
     );
   }
 
+  if (data.buildings.length === 0) {
+    return (
+      <div className={styles.page}>
+        <DayOne organisation={data.organisation.name} />
+      </div>
+    );
+  }
   const zone = data.organisation.viewerZone;
   let rows = data.buildings;
   if (scope.kind === "state") rows = rows.filter((b) => b.state === scope.id);

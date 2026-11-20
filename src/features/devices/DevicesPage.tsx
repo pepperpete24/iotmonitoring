@@ -55,6 +55,14 @@ export function DevicesPage() {
       </div>
     );
   }
+  if (data.length === 0) {
+    return (
+      <div className={styles.page}>
+        <h1 className="t-title">Devices</h1>
+        <p className="t-prose soft">No devices yet. Each device appears here as the installer commissions it, with its signal and battery checked on site.</p>
+      </div>
+    );
+  }
   const stateOf = (b: string) => portfolio.data?.buildings.find((x) => x.id === b)?.state;
   let rows = data;
   if (scope.kind === "state") rows = rows.filter((d) => stateOf(d.buildingId) === scope.id);

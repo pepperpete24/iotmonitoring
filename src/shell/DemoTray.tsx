@@ -31,6 +31,8 @@ export function DemoTray() {
     void qc.invalidateQueries();
   };
   const role = useUi((s) => s.role);
+  const dayOne = useUi((s) => s.dayOne);
+  const setDayOne = useUi((s) => s.setDayOne);
   const setRole = useUi((s) => s.setRole);
   const navigate = useNavigate();
   const smsFor = role === "marcus" ? "marcus" : "tom";
@@ -143,6 +145,22 @@ export function DemoTray() {
         ) : (
           <p className={styles.smsMeta}>No SMS sent yet in this demo.</p>
         )}
+      </div>
+      <div className={styles.row}>
+        <span className={styles.label}>Customer</span>
+        <Segmented<"pemberton" | "day-one">
+          label="Customer"
+          value={dayOne ? "day-one" : "pemberton"}
+          onChange={(v) => {
+            setDayOne(v === "day-one");
+            void qc.invalidateQueries();
+            navigate("/portfolio");
+          }}
+          options={[
+            { value: "pemberton", label: "Pemberton Hall" },
+            { value: "day-one", label: "Day one, new customer" },
+          ]}
+        />
       </div>
       <div className={styles.row}>
         <span className={styles.label}>Theme</span>
