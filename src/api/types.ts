@@ -291,4 +291,8 @@ export interface IncidentDetail extends IncidentSummary {
   valve: { tag: string; closed: boolean; isolation: string } | null;
   /** Leak sensors on this incident that still read wet. Resolve waits for them. */
   wetSensors: string[];
+  /** How a responder gets in. */
+  access: string;
+  /** Who to call on site: the building's first contact. */
+  siteContact: { name: string; mobileMasked: string } | null;
 }

@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, Navigate, RouterProvider, useParams } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AppShell } from "@/shell/AppShell";
 import { Pending } from "@/features/Pending";
@@ -10,6 +10,8 @@ import { IncidentsPage } from "@/features/incidents/IncidentsPage";
 import { DevicesPage } from "@/features/devices/DevicesPage";
 import { DeviceDetailPage } from "@/features/devices/DeviceDetailPage";
 import { WaterPage } from "@/features/water/WaterPage";
+import { RespondPage } from "@/features/mobile/RespondPage";
+import { CommissionPage } from "@/features/mobile/CommissionPage";
 import { LogbookPage } from "@/features/logbook/LogbookPage";
 import { MonthlyReportPage } from "@/features/reports/MonthlyReportPage";
 import { IncidentReportPage } from "@/features/reports/IncidentReportPage";
@@ -53,15 +55,16 @@ const router = createBrowserRouter([
       },
     ],
   },
-  {
-    path: "/m/respond/:incidentId",
-    element: <Pending title="Respond" job="Phone view opened from an SMS link." milestone="M7" />,
-  },
-  {
-    path: "/m/commission",
-    element: <Pending title="Commission a device" job="Phone view for installers." milestone="M7" />,
-  },
+  { path: "/m/respond/:incidentId", element: <RespondPage /> },
+  { path: "/r/:short", element: <ShortLink /> },
+  { path: "/m/commission", element: <CommissionPage /> },
 ]);
+
+/** The short link in an SMS: /r/0167 opens the responder view for I-2026-0167. */
+function ShortLink() {
+  const { short } = useParams();
+  return <Navigate to={`/m/respond/I-2026-${short ?? ""}`} replace />;
+}
 
 function Live() {
   useLiveUpdates();

@@ -330,3 +330,12 @@ export const ORGANISATION = {
   tariffPerKL: 3.5,
   viewerZone: "Australia/Sydney" as AuZone,
 } as const;
+
+/** How a responder gets in, for the phone view. Where none is set, the building manager's office. */
+export const ACCESS: Record<string, string> = {
+  "kendall-street-tower": "Car park entry off Kendall Lane. B2 booster pump room is beside lift 2; key in the lockbox, code from the building manager.",
+  "ellery-house-hotel": "Loading dock on Sussex Lane. Ask the night manager at reception for the plant room key.",
+  "140-wexford-street": "Security desk on Ground; sign in and collect a riser key.",
+  "the-foundry": "Front door on Kerr Lane; strata key safe by the letterboxes.",
+  "marden-square": "Centre management office, Level 1, off the food court. After hours via the dock on Orchard Road.",
+};

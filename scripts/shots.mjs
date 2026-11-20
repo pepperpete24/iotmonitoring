@@ -33,6 +33,8 @@ const SCREENS = [
   { name: "logbook", path: "/logbook" },
   { name: "report-october", path: "/reports/monthly?month=2026-10", full: true },
   { name: "report-incident-foundry", path: "/reports/incident/I-2026-0141", full: true },
+  { name: "phone-respond", path: "/m/respond/I-2026-0167", full: true },
+  { name: "phone-commission", path: "/m/commission" },
   { name: "shell-incident-inspector", path: "/portfolio?inspect=incident:I-2026-0167" },
   { name: "dev-symbols", path: "/dev/symbols?inspect=symbol:isolation-valve", full: true },
   { name: "tree-drawer", path: "/buildings/wattle-grove", widthOnly: [1024], click: "Show buildings", byLabel: true },

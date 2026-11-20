@@ -25,7 +25,9 @@ import {
   fleetExceptions,
   waterLostL,
 } from "@/mock/selectors/compute";
-import { BUILDINGS, buildingById, ORGANISATION } from "@/mock/world/buildings";
+import { ACCESS, BUILDINGS, buildingById, ORGANISATION } from "@/mock/world/buildings";
+import { personById } from "@/mock/world/people";
+import { ROSTER } from "@/mock/world/rules";
 import { personName } from "@/mock/world/people";
 import { ruleById } from "@/mock/world/rules";
 import { deviceById, topologyOf } from "@/mock/world/topology";
@@ -154,6 +156,11 @@ export function incidentDetail(engine: Engine, i: Incident, now: UtcMs): Inciden
     damage: i.damage,
     valve: hasValve ? { tag: "XV-01", closed: engine.valveClosed(b.id, "XV-01", now), isolation: isolationOf(b.id).sentence } : null,
     wetSensors,
+    access: ACCESS[b.id] ?? "Report to the building manager's office on Ground. After hours, the security contact on the front door has the plant room key.",
+    siteContact: (() => {
+      const p = personById.get(ROSTER[b.id]?.[0] ?? "");
+      return p ? { name: p.name, mobileMasked: engine.contactOverrides.get(p.id) ?? p.mobileMasked } : null;
+    })(),
   };
 }
 

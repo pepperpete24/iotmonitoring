@@ -72,7 +72,7 @@
 }
 
 .label {
-  width: 64px;
+  min-width: 64px;
   color: var(--ink-soft);
   font-family: var(--font-num);
   font-size: var(--fs-13);
@@ -98,4 +98,20 @@
 .error {
   color: var(--ink);
   font-size: var(--fs-13);
+}
+
+.sms {
+  padding: 8px 10px;
+  border: 1px solid var(--rule);
+  border-radius: var(--r-control);
+  background: var(--wash);
+  font-size: var(--fs-13);
+  line-height: 18px;
+  overflow-wrap: anywhere;
+}
+
+.smsMeta {
+  font-family: var(--font-num);
+  font-size: var(--fs-12);
+  color: var(--ink-soft);
 }

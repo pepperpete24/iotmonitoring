@@ -1,12 +1,15 @@
 /**
- * Demo controls for the founder, opened with Shift+D. M1 holds the clock,
- * theme and density; scenario triggers and role switching join in M2 and M7.
+ * Demo controls for the founder, opened with Shift+D: the clock, scenarios,
+ * who you are, the SMS a responder received, theme and density.
  */
 import { useEffect } from "react";
 import { X } from "lucide-react";
 import { Button, Segmented } from "@/components/Button";
 import { useQueryClient } from "@tanstack/react-query";
-import { useCommand } from "@/api/queries";
+import { useNavigate } from "react-router-dom";
+import { useCommand, useSms } from "@/api/queries";
+import type { Role } from "@/domain/common";
+import { formatTimeZoned } from "@/lib/format";
 import { resetDemo } from "@/mock/runtime";
 import { type Speed, useClockStore } from "@/state/clock";
 import { type Density, type ThemePref, useUi } from "@/state/ui";
@@ -26,6 +29,19 @@ export function DemoTray() {
   const reset = () => {
     resetDemo();
     void qc.invalidateQueries();
+  };
+  const role = useUi((s) => s.role);
+  const setRole = useUi((s) => s.setRole);
+  const navigate = useNavigate();
+  const smsFor = role === "marcus" ? "marcus" : "tom";
+  const sms = useSms(open ? smsFor : null);
+  const latest = sms.data?.[0];
+  const switchRole = (r: Role) => {
+    setRole(r);
+    if (r === "helen") navigate("/portfolio");
+    if (r === "marcus") navigate("/buildings/kendall-street-tower");
+    if (r === "tom") navigate(`/m/respond/${latest?.incidentId && latest.incidentId !== "TEST" ? latest.incidentId : "I-2026-0167"}`);
+    if (r === "kayla") navigate("/m/commission");
   };
   const trigger = (scenario: "burst" | "door" | "gateway" | "leak-false-alarm") => command.mutate({ type: "trigger", scenario, by: "helen" });
 
@@ -92,6 +108,41 @@ export function DemoTray() {
           </li>
         </ul>
         {command.isError && <p className={styles.error}>{String((command.error as Error).message)}</p>}
+      </div>
+      <div className={styles.row}>
+        <span className={styles.label}>You are</span>
+        <Segmented<Role>
+          label="Role"
+          value={role}
+          onChange={switchRole}
+          options={[
+            { value: "helen", label: "Helen" },
+            { value: "marcus", label: "Marcus" },
+            { value: "tom", label: "Tom, phone" },
+            { value: "kayla", label: "Kayla, phone" },
+          ]}
+        />
+      </div>
+      <div className={styles.block}>
+        <span className={styles.label}>Latest SMS to {smsFor === "tom" ? "Tom Fitzgerald" : "Marcus Teo"}</span>
+        {latest ? (
+          <>
+            <p className={styles.sms}>
+              {latest.body}
+              <br />
+              <span className={styles.smsMeta}>
+                {formatTimeZoned(latest.at, "Australia/Sydney")}. {latest.detail}.
+              </span>
+            </p>
+            {latest.incidentId !== "TEST" && (
+              <Button variant="quiet" onClick={() => switchRole(smsFor === "tom" ? "tom" : "marcus")}>
+                Open the link as {smsFor === "tom" ? "Tom" : "Marcus"}
+              </Button>
+            )}
+          </>
+        ) : (
+          <p className={styles.smsMeta}>No SMS sent yet in this demo.</p>
+        )}
       </div>
       <div className={styles.row}>
         <span className={styles.label}>Theme</span>

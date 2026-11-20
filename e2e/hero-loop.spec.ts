@@ -33,7 +33,7 @@ test("the hero loop from the Watch bar to resolved", async ({ page }) => {
   await bar.getByRole("button", { name: "Close isolation valve" }).click();
   await expect(page.getByText(/Levels 7 to 18 \(12 levels, 84 apartments\)/)).toBeVisible();
   await page.getByRole("button", { name: "Close XV-01" }).click();
-  await expect(page.getByText("Closed XV-01.")).toBeVisible();
+  await expect(page.getByRole("status").filter({ hasText: "Closed XV-01." })).toBeVisible();
 
   // 6. Resolve is refused while WL-B2-03 still reads wet
   await bar.getByRole("button", { name: "Resolve", exact: true }).click();

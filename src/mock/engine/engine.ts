@@ -19,7 +19,8 @@ import { personName } from "@/mock/world/people";
 import { criticalPolicy, ROSTER, warningPolicy } from "@/mock/world/rules";
 
 const ROSTER_FIRST = (buildingId: string) => ROSTER[buildingId]?.[0] ?? "helen";
-import { allDevices, deviceById, topologyOf } from "@/mock/world/topology";
+import { addDevice, allDevices, deviceById, makeDevice, removeAddedDevices, topologyOf } from "@/mock/world/topology";
+import { DEVICE_KIND_LABEL, type DeviceKind } from "@/domain/ingestion";
 import { runCriticalEscalation, testMessage, warningNotice } from "./escalation";
 import { buildWatches, conditionAt, type Watch } from "./rules";
 
@@ -48,6 +49,7 @@ export type Command =
   | { type: "move-device"; deviceId: string; location: string; by: string }
   | { type: "replace-device"; deviceId: string; reason: string; by: string }
   | { type: "test-alert"; deviceId: string; by: string }
+  | { type: "commission-device"; buildingId: string; tag: string; kind: DeviceKind; levelId: string; systemId: string | null; location: string; devEui: string; photo: string | null; by: string }
   | { type: "trigger"; scenario: "burst" | "door" | "gateway" | "leak-false-alarm"; by: string };
 
 export interface StampedCommand {
@@ -94,7 +96,12 @@ export class Engine {
 
   // ---- lifecycle ---------------------------------------------------------------
 
+  /** Devices commissioned during this session, removed again on reset. */
+  private addedDevices: string[] = [];
+
   reset() {
+    removeAddedDevices(this.addedDevices ?? []);
+    this.addedDevices = [];
     this.world = buildWorld();
     this.now = DEMO_START;
     this.tariffPerKL = 3.5;
@@ -604,6 +611,22 @@ export class Engine {
         this.world.notifications.push(n);
         this.log(cmd.by, "test-message", { buildingId: d.buildingId, deviceId: d.id, target: d.tag, detail: `Test alert from ${d.tag} sent to ${personName(first)} by SMS: ${lowerFirst(n.detail)}.` });
         this.emit("notifications");
+        break;
+      }
+      case "commission-device": {
+        if (!/^[0-9A-F]{16}$/.test(cmd.devEui)) throw new CommandError(400, "A DevEUI is 16 characters, 0 to 9 and A to F. Check the label.");
+        if (allDevices().some((d) => d.devEui === cmd.devEui)) throw new CommandError(409, "This DevEUI is already registered. Scan the label again, or check the device is not already installed.");
+        if (allDevices().some((d) => d.id === `${cmd.buildingId}/${cmd.tag}`)) throw new CommandError(409, `${cmd.tag} is already in use at this building. Choose another tag.`);
+        const d = makeDevice({ ...cmd, installer: cmd.by, at: this.now });
+        addDevice(d);
+        this.addedDevices.push(d.id);
+        for (const w of buildWatches().filter((x) => x.device.id === d.id)) {
+          this.watches.push(w);
+          this.state.set(w.key, { since: null, alertId: null });
+        }
+        const level = topologyOf(cmd.buildingId).levels.find((l) => l.id === cmd.levelId)?.label ?? "";
+        this.log(cmd.by, "device-commissioned", { buildingId: cmd.buildingId, deviceId: d.id, target: cmd.tag, detail: `Commissioned ${cmd.tag}, ${DEVICE_KIND_LABEL[cmd.kind].toLowerCase()}, ${level}, ${cmd.location}. DevEUI ${cmd.devEui}. Signal and test uplink checked on site.${cmd.photo ? ` Photo: ${cmd.photo}.` : ""}` });
+        this.emit("effects");
         break;
       }
       case "trigger":

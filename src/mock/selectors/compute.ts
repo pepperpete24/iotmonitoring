@@ -14,7 +14,7 @@ import { healthAt, lastUplink } from "@/mock/signals/uplinks";
 import { DEMO_START } from "@/mock/scenarios/clock";
 import { BUILDINGS, buildingById, type BuildingProfile } from "@/mock/world/buildings";
 import { ruleById } from "@/mock/world/rules";
-import { allDevices, deviceById, topologyOf } from "@/mock/world/topology";
+import { allDevices, deviceById, onFleetChange, topologyOf } from "@/mock/world/topology";
 
 // ---- incidents ---------------------------------------------------------------
 
@@ -85,6 +85,7 @@ export function annunciatorFor(engine: Engine, buildingId: string, now: UtcMs): 
 export type DeviceStatus = "online" | "offline" | "paused" | "muted";
 
 const devicesByBuilding = new Map<string, Device[]>();
+onFleetChange(() => devicesByBuilding.clear());
 export function devicesOf(buildingId: string): Device[] {
   let list = devicesByBuilding.get(buildingId);
   if (!list) {

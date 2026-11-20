@@ -103,6 +103,22 @@ export function useMonthlyReport(month: string) {
   });
 }
 
+export function useSms(personId: string | null) {
+  return useQuery({
+    queryKey: ["sms", personId ?? ""],
+    queryFn: () => transport.get<Array<{ id: string; at: number; incidentId: string; body: string; result: string; detail: string }>>(`/api/sms?person=${personId}&limit=3`),
+    enabled: !!personId,
+  });
+}
+
+export function useNextTag(buildingId: string, kind: string, levelId: string) {
+  return useQuery({
+    queryKey: ["next-tag", buildingId, kind, levelId],
+    queryFn: () => transport.get<{ tag: string }>(`/api/buildings/${buildingId}/next-tag?kind=${kind}&level=${encodeURIComponent(levelId)}`),
+    enabled: !!buildingId && !!levelId,
+  });
+}
+
 /** Send a person's action. Every query refreshes once the engine has applied it. */
 export function useCommand() {
   const qc = useQueryClient();

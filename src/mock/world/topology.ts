@@ -565,3 +565,93 @@ export function deviceById(id: string): Device | undefined {
   if (!deviceIndex) deviceIndex = new Map(allDevices().map((d) => [d.id, d]));
   return deviceIndex.get(id);
 }
+
+// ---- live changes: devices commissioned during the demo ------------------------
+
+const listeners = new Set<() => void>();
+/** Called when the fleet changes, so caches built from it can be dropped. */
+export function onFleetChange(fn: () => void) {
+  listeners.add(fn);
+}
+
+/** Add a newly commissioned device to its building. */
+export function addDevice(d: Device) {
+  const t = topologyOf(d.buildingId);
+  if (t.devices.some((x) => x.id === d.id)) throw new Error(`${d.tag} already exists at this building`);
+  t.devices.push(d);
+  deviceIndex = null;
+  for (const fn of listeners) fn();
+}
+
+/** Remove devices commissioned during the demo (reset). */
+export function removeAddedDevices(ids: string[]) {
+  if (!ids.length) return;
+  for (const t of allTopology().values()) t.devices = t.devices.filter((d) => !ids.includes(d.id));
+  deviceIndex = null;
+  for (const fn of listeners) fn();
+}
+
+/** Build a device as an installer would commission it. */
+export function makeDevice(args: {
+  buildingId: string;
+  tag: string;
+  kind: DeviceKind;
+  levelId: string;
+  systemId: string | null;
+  location: string;
+  devEui: string;
+  installer: string;
+  at: number;
+}): Device {
+  const id = `${args.buildingId}/${args.tag}`;
+  const t = topologyOf(args.buildingId);
+  const gateway = t.devices.filter((d) => d.kind === "gateway").sort((a, z) => {
+    const la = t.levels.find((l) => l.id === a.levelId)!.order;
+    const lz = t.levels.find((l) => l.id === z.levelId)!.order;
+    const target = t.levels.find((l) => l.id === args.levelId)!.order;
+    return Math.abs(la - target) - Math.abs(lz - target);
+  })[0];
+  return {
+    id,
+    tag: args.tag,
+    kind: args.kind,
+    model: PLACEHOLDER_MODEL[args.kind],
+    devEui: args.devEui,
+    firmware: FIRMWARE[args.kind],
+    batteryAtStart: 100,
+    batteryDrainPerDay: 0.04,
+    rssi: -94,
+    snr: 6.5,
+    link: args.kind === "gateway" ? "Cellular" : "LoRaWAN",
+    gatewayId: gateway?.id ?? null,
+    installer: args.installer,
+    installedAt: args.at,
+    calibratedAt: args.kind === "flow-meter" || args.kind === "pressure-sensor" || args.kind === "tank-level" ? args.at : null,
+    uplinkS: CHANNELS[args.kind][0]?.intervalS ?? 300,
+    lossRate: 0,
+    channels: CHANNELS[args.kind].map((c) => ({ id: `${id}/${c.measure}`, deviceId: id, measure: c.measure, intervalS: c.intervalS, resolution: c.resolution })),
+    buildingId: args.buildingId,
+    levelId: args.levelId,
+    systemId: args.systemId,
+    equipmentId: null,
+    location: args.location,
+  };
+}
+
+/** The next free tag of a kind on a level, for example WL-B2-05. */
+export function nextTag(buildingId: string, kind: DeviceKind, levelShort: string): string {
+  const prefix: Record<DeviceKind, string> = {
+    "flow-meter": "FT",
+    "pressure-sensor": "PT",
+    "tank-level": "LT",
+    "pump-monitor": "PC",
+    "leak-sensor": `WL-${levelShort}`,
+    "temperature-probe": "TT",
+    "door-contact": "DC",
+    "valve-controller": "XV",
+    gateway: "GW",
+  };
+  const p = prefix[kind];
+  const used = topologyOf(buildingId).devices.map((d) => d.tag).filter((t) => t.startsWith(`${p}-`)).map((t) => Number(t.slice(p.length + 1)) || 0);
+  return `${p}-${String(Math.max(0, ...used) + 1).padStart(2, "0")}`;
+}

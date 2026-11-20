@@ -10,7 +10,8 @@ import { incidentDetail, incidentSummary, logbookView, portfolioStatus } from ".
 import { buildingDetail, deviceLive, series } from "./views-building";
 import { deviceDetail, waterView } from "./views-more";
 import { monthlyReport } from "./views-reports";
-import { allDevices } from "@/mock/world/topology";
+import { allDevices, nextTag, topologyOf } from "@/mock/world/topology";
+import type { DeviceKind } from "@/domain/ingestion";
 import { buildingById } from "@/mock/world/buildings";
 
 interface MockResponse {
@@ -67,6 +68,28 @@ const routes: Array<[method: string, pattern: RegExp, keys: string[], handler: H
       const month = q.get("month") ?? "2026-10";
       if (!/^\d{4}-\d{2}$/.test(month)) return { status: 400, body: "Give the month as YYYY-MM, for example 2026-10." };
       return ok(monthlyReport(engine, month, engine.now));
+    },
+  ],
+
+  [
+    "GET",
+    /^\/api\/sms$/,
+    [],
+    (_p, q) => {
+      const person = q.get("person") ?? "";
+      const list = engine.world.notifications.filter((n) => n.personId === person && n.channel === "sms" && n.at <= engine.now + 30_000);
+      return ok(list.slice(-Number(q.get("limit") ?? 3)).reverse());
+    },
+  ],
+
+  [
+    "GET",
+    /^\/api\/buildings\/([^/]+)\/next-tag$/,
+    ["id"],
+    ({ id }, q) => {
+      const level = topologyOf(id ?? "").levels.find((l) => l.id === q.get("level"));
+      if (!level) return { status: 400, body: "Choose a level first." };
+      return ok({ tag: nextTag(id ?? "", (q.get("kind") ?? "leak-sensor") as DeviceKind, level.short) });
     },
   ],
 
