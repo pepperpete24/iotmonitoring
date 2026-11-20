@@ -7,3 +7,9 @@ playwright-report
 .claude/settings.local.json
 dataviz-skill.zip
 *.tsbuildinfo
+
+# images and the local dataviz skill stay off GitHub
+*.png
+*.jpg
+*.jpeg
+.claude/skills/dataviz/
